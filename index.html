@@ -352,6 +352,32 @@ body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:1
 *{font-variant-ligatures:none;}
 code,.code-block,pre,span,body,p,div,li,td,th,label,button{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0;}
 .code,.bug-code,.out-line{user-select:none;-webkit-user-select:none;}
+/* Block selecting question text (reduces “Search / Define” from mobile & extensions) */
+#app-shell .q-text,
+#app-shell .code,
+#app-shell .bug-line,
+#app-shell .bug-lnum,
+#app-shell .bug-code,
+#app-shell .opt,
+#app-shell .drop-desc,
+#app-shell .drop-slot,
+#app-shell .match-col-lbl,
+#app-shell .slot-hint,
+#app-shell .out-sym{
+  user-select:none!important;
+  -webkit-user-select:none!important;
+  -moz-user-select:none!important;
+  -ms-user-select:none!important;
+  -webkit-touch-callout:none!important;
+  -webkit-user-drag:none;
+}
+#app-shell .fill-inp,
+#app-shell .out-inp{
+  user-select:text!important;
+  -webkit-user-select:text!important;
+  -moz-user-select:text!important;
+  -webkit-touch-callout:none!important;
+}
 
 /* ── DEVTOOLS BLOCKED ── */
 #devtools-block{display:none;position:fixed;inset:0;z-index:99999;background:#0b0d12;align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:16px;}
@@ -648,14 +674,66 @@ code,.code-block,pre,span,body,p,div,li,td,th,label,button{font-variant-ligature
     btn.innerText = '☀️';
   }
 }
-// ── COPY & KEY PROTECTION ────────────────────────
-document.addEventListener('contextmenu',e=>e.preventDefault());
-document.addEventListener('keydown',e=>{
-  if(e.ctrlKey&&['c','a','u','s','p'].includes(e.key.toLowerCase()))e.preventDefault();
-  if(e.key==='F5'||(e.ctrlKey&&e.key.toLowerCase()==='r'))e.preventDefault();
-  if(e.key==='F12')e.preventDefault();
-  if(e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(e.key.toLowerCase()))e.preventDefault();
+// ── COPY / PASTE / SELECTION (exam only; login can paste ID) ────────────────────────
+function isLoginTarget(t){return t&&t.closest&&t.closest('#login-screen');}
+function isExamAnswerField(t){
+  return t&&(t.classList?.contains('fill-inp')||t.classList?.contains('out-inp')||t.closest?.('.fill-inp, .out-inp'));
+}
+function isAnswerKeyField(t){return t&&t.closest&&t.closest('#answer-key-section');}
+
+document.addEventListener('contextmenu',e=>{
+  if(isLoginTarget(e.target)||isAnswerKeyField(e.target))return;
+  e.preventDefault();
 });
+
+document.addEventListener('selectstart',e=>{
+  if(isLoginTarget(e.target)||isAnswerKeyField(e.target))return;
+  if(isExamAnswerField(e.target))return;
+  if(e.target&&e.target.closest&&e.target.closest('#app-shell'))e.preventDefault();
+},{capture:true});
+
+document.addEventListener('dragstart',e=>{
+  if(isLoginTarget(e.target))return;
+  if(e.target&&e.target.closest&&e.target.closest('#app-shell'))e.preventDefault();
+},{capture:true});
+
+document.addEventListener('copy',e=>{
+  if(isLoginTarget(e.target)||isAnswerKeyField(e.target))return;
+  if(isExamAnswerField(e.target))return;
+  if(e.target&&e.target.closest&&e.target.closest('#app-shell')){
+    e.preventDefault();
+    if(e.clipboardData)e.clipboardData.setData('text/plain','');
+  }
+},{capture:true});
+
+document.addEventListener('cut',e=>{
+  if(isLoginTarget(e.target)||isAnswerKeyField(e.target))return;
+  if(isExamAnswerField(e.target))return;
+  if(e.target&&e.target.closest&&e.target.closest('#app-shell'))e.preventDefault();
+},{capture:true});
+
+document.addEventListener('paste',e=>{
+  if(isLoginTarget(e.target)||isAnswerKeyField(e.target))return;
+  if(e.target&&e.target.closest&&e.target.closest('#app-shell'))e.preventDefault();
+},{capture:true});
+
+document.addEventListener('keydown',e=>{
+  const t=e.target;
+  if(isLoginTarget(t)){
+    if(e.key==='F12')e.preventDefault();
+    return;
+  }
+  const k=e.key.toLowerCase();
+  const mod=e.ctrlKey||e.metaKey;
+  if(mod&&['c','x','v','a','u','s','p'].includes(k)){
+    if(isExamAnswerField(t)&&['c','x','a'].includes(k))return;
+    e.preventDefault();
+  }
+  if(e.shiftKey&&e.key==='Insert')e.preventDefault();
+  if(e.key==='F5'||(e.ctrlKey&&k==='r'))e.preventDefault();
+  if(e.key==='F12')e.preventDefault();
+  if(e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(k))e.preventDefault();
+},{capture:true});
 
 // ── DEVTOOLS DETECTION ───────────────────────────
 (function devBlock(){
