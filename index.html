@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ CodeLab — mixed</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,700;1,400&family=Syne:wght@400;600;700;800&display=swap');
+:root {
+  --bg:#0b0d12;--surface:#11141c;--surface2:#181c27;--surface3:#1e2230;
+  --border:#222636;--border2:#2c3147;
+  --amber:#f0a500;--amber2:#ffbe3a;
+  --amber-dim:rgba(240,165,0,.11);--amber-glow:rgba(240,165,0,.05);
+  --teal:#2dd4a0;--teal-dim:rgba(45,212,160,.11);
+  --red:#ff5f6e;--red-dim:rgba(255,95,110,.11);
+  --blue:#5aabff;--blue-dim:rgba(90,171,255,.1);
+  --purple:#c084fc;--purple-dim:rgba(192,132,252,.1);
+  --orange:#fb923c;--orange-dim:rgba(251,146,60,.1);
+  --text:#dde1ee;--text2:#8892aa;--text3:#4a5068;
+  --mono:'JetBrains Mono',monospace;--sans:'Syne',sans-serif;
+  --r:10px;--rs:6px;
+  --bottombar-h:60px;
+  
+}
+/* Google-Inspired Light Mode */
+body.light-mode {
+  --bg: #ffffff;         /* Pure white for the main background */
+  --surface: #f8f9fa;    /* Very soft gray for cards or main areas */
+  --surface2: #f1f3f4;   /* Slightly darker for the sidebar and nav items */
+  --surface3: #e8eaed;   /* Used for hover states */
+  --border: #dadce0;     /* Soft, subtle borders */
+  --border2: #bdc1c6;    /* Slightly stronger borders if needed */
+  color: #202124;        /* Standard dark gray text (easier on eyes than pure black) */
+}
+
+/* Ensures sidebar labels are clearly visible */
+body.light-mode .nav-txt, 
+body.light-mode .sb-lbl {
+  color: #3c4043; 
+}
+
+/* Icon-Only Theme Button Styling */
+.theme-btn {
+  background: var(--surface2);
+  color: inherit;
+  border: 1px solid var(--border);
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+}
+
+.theme-btn:hover {
+  background: var(--surface2); /* Subtle gray hover effect */
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;}
+
+/* ── LOGIN ── */
+#login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+.login-card{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:48px 40px;width:100%;max-width:460px;text-align:center;}
+.login-logo{display:inline-flex;align-items:center;justify-content:center;width:56px;height:56px;background:var(--amber);border-radius:14px;font-family:var(--mono);font-size:14px;font-weight:700;color:#0b0d12;margin-bottom:20px;}
+.login-title{font-size:22px;font-weight:800;margin-bottom:6px;}
+.login-sub{font-size:12px;color:var(--text2);font-family:var(--mono);margin-bottom:32px;}
+.login-field{text-align:left;margin-bottom:16px;}
+.login-field label{display:block;font-size:10px;font-family:var(--mono);color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:6px;}
+.login-input{width:100%;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:11px 14px;font-family:var(--mono);font-size:13px;color:var(--text);outline:none;transition:border-color .2s;}
+.login-input:focus{border-color:var(--amber);}
+.login-input.ok{border-color:var(--teal);color:var(--teal);}
+.login-input.err{border-color:var(--red);color:var(--red);}
+.login-hint{font-size:10px;font-family:var(--mono);margin-top:5px;min-height:14px;}
+.login-hint.ok{color:var(--teal);}.login-hint.err{color:var(--red);}
+.login-welcome{background:var(--teal-dim);border:1px solid var(--teal);border-radius:var(--rs);padding:12px 16px;font-size:12px;font-family:var(--mono);color:var(--teal);margin-bottom:20px;display:none;text-align:left;line-height:1.7;}
+.login-btn{width:100%;padding:13px;background:var(--amber);border:none;border-radius:var(--rs);font-family:var(--mono);font-size:12px;font-weight:700;color:#0b0d12;cursor:pointer;transition:background .15s;letter-spacing:.05em;margin-top:4px;}
+.login-btn:hover{background:var(--amber2);}
+.login-btn:disabled{opacity:.45;cursor:default;}
+.login-notice{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:16px;}
+
+/* ── APP SHELL ── */
+#app-shell{display:none;}
+.hdr{background:var(--surface);border-bottom:1px solid var(--border);height:58px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:200;}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-ico{width:30px;height:30px;background:var(--amber);border-radius:7px;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:12px;font-weight:700;color:#0b0d12;}
+.brand-title{font-size:14px;font-weight:700;}
+.brand-sub{font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:14px;}
+.prog-wrap{display:flex;align-items:center;gap:10px;}
+.prog-lbl{font-size:11px;color:var(--text2);font-family:var(--mono);}
+.prog-track{width:160px;height:4px;background:var(--border2);border-radius:2px;overflow:hidden;}
+.prog-fill{height:100%;background:var(--amber);border-radius:2px;transition:width .5s ease;width:0%;}
+.score-tag{background:var(--amber-dim);border:1px solid var(--amber);border-radius:20px;padding:4px 13px;font-size:11px;font-family:var(--mono);color:var(--amber);font-weight:700;}
+.user-tag{background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:4px 13px;font-size:10px;font-family:var(--mono);color:var(--text2);max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.gtimer{display:flex;align-items:center;gap:8px;background:var(--surface2);border:1px solid var(--border2);border-radius:20px;padding:4px 13px;}
+.gtimer-dot{width:7px;height:7px;border-radius:50%;background:var(--teal);box-shadow:0 0 5px var(--teal);animation:blink 1.4s ease infinite;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:.25;}}
+.gtimer-dot.warn{background:var(--amber);box-shadow:0 0 5px var(--amber);}
+.gtimer-dot.urgent{background:var(--red);box-shadow:0 0 5px var(--red);}
+.gtimer-dot.off{background:var(--text3);animation:none;box-shadow:none;}
+.gtimer-num{font-size:12px;font-family:var(--mono);font-weight:700;color:var(--teal);min-width:44px;transition:color .3s;}
+.gtimer-num.warn{color:var(--amber);}
+.gtimer-num.urgent{color:var(--red);}
+.gtimer-num.off{color:var(--text3);}
+.gtimer-lbl{font-size:10px;color:var(--text3);font-family:var(--mono);}
+
+/* ── LAYOUT ── */
+.layout{display:grid;grid-template-columns:230px 1fr;min-height:calc(100vh - 58px - var(--bottombar-h));}
+.sidebar{background:var(--surface);border-right:1px solid var(--border);padding:12px 0;overflow-y:auto;max-height:calc(100vh - 58px - var(--bottombar-h));position:sticky;top:58px;}
+.sb-lbl{padding:10px 16px 4px;font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;color:var(--text3);font-family:var(--mono);}
+.nav-it{display:flex;align-items:center;gap:9px;padding:7px 14px;cursor:pointer;transition:all .15s;border-left:2px solid transparent;margin:1px 0;}
+.nav-it:hover{background:var(--amber-glow);}
+.nav-it.active{background:var(--amber-dim);border-left-color:var(--amber);}
+/* .nav-it.done-ok .nav-n{background:var(--teal)!important;border-color:var(--teal)!important;color:#0b0d12!important;}
+.nav-it.done-fail .nav-n{background:var(--red)!important;border-color:var(--red)!important;color:#fff!important;} */
+.nav-n{width:20px;height:20px;border-radius:50%;background:var(--surface2);border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;font-size:9px;font-family:var(--mono);color:var(--text3);flex-shrink:0;transition:all .2s;font-weight:700;}
+.nav-it.active .nav-n{background:var(--amber);border-color:var(--amber);color:#0b0d12;}
+.nav-txt{font-size:11px;color:var(--text2);line-height:1.3;flex:1;}
+.nav-it.active .nav-txt{color:var(--amber2);font-weight:600;}
+
+/* .nav-it.done-ok .nav-txt{color:var(--teal);}
+.nav-it.done-fail .nav-txt{color:var(--red);} */
+.nav-badge{font-size:9px;font-family:var(--mono);color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:3px;padding:2px 5px;white-space:nowrap;}
+
+.main{padding:28px 32px 28px;max-width:860px;}
+.screen{display:none;}
+.screen.active{display:block;animation:fadeIn .3s ease;}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── CARDS & Q STYLES ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);margin-bottom:18px;overflow:hidden;}
+.card-bar{background:var(--surface2);border-bottom:1px solid var(--border);padding:9px 14px;display:flex;align-items:center;gap:8px;}
+.dot{width:8px;height:8px;border-radius:50%;}
+.d-r{background:#ff5f6e;}.d-y{background:#ffbe3a;}.d-g{background:#2dd4a0;}
+.c-file{font-size:10px;font-family:var(--mono);color:var(--text3);margin-left:4px;}
+.c-type{margin-left:auto;font-size:9px;font-family:var(--mono);font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:3px 8px;border-radius:4px;border:1px solid;}
+.t-mc{color:var(--blue);border-color:var(--blue);background:var(--blue-dim);}
+.t-fill{color:var(--amber);border-color:var(--amber);background:var(--amber-dim);}
+.t-pred{color:var(--teal);border-color:var(--teal);background:var(--teal-dim);}
+.t-match{color:var(--purple);border-color:var(--purple);background:var(--purple-dim);}
+.t-bug{color:var(--orange);border-color:var(--orange);background:var(--orange-dim);}
+.card-body{padding:20px 22px;}
+.q-lbl{font-size:10px;font-family:var(--mono);color:var(--amber);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.q-diff{font-size:9px;padding:2px 7px;border-radius:3px;font-weight:700;}
+.diff-easy{background:rgba(45,212,160,.12);color:var(--teal);border:1px solid var(--teal);}
+.diff-med{background:var(--blue-dim);color:var(--blue);border:1px solid var(--blue);}
+.diff-hard{background:rgba(251,146,60,.12);color:var(--orange);border:1px solid var(--orange);}
+.diff-xhard{background:var(--red-dim);color:var(--red);border:1px solid var(--red);}
+.q-text{font-size:14px;font-weight:600;color:var(--text);line-height:1.6;margin-bottom:16px;}
+.q-text code{font-family:var(--mono);font-size:12px;background:var(--surface2);border:1px solid var(--border2);border-radius:3px;padding:1px 5px;color:var(--amber2);}
+.code{background:#080a0f;border:1px solid var(--border2);border-radius:var(--rs);padding:14px 16px;font-family:var(--mono);font-size:12.5px;line-height:1.85;margin-bottom:16px;white-space:pre;overflow-x:auto;}
+.kw{color:#c792ea;}.str{color:#c3e88d;}.num{color:#f78c6c;}.cmt{color:#4a5568;font-style:italic;}
+.fn{color:#82aaff;}.var{color:#eefff9;}.punct{color:#89ddff;}.op{color:#89ddff;}
+
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.opts.wide{grid-template-columns:1fr;}
+.opt{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:10px 14px;cursor:pointer;transition:all .15s;text-align:left;color:var(--text);font-family:var(--mono);font-size:12px;display:flex;align-items:flex-start;gap:10px;line-height:1.5;width:100%;min-height:48px;}
+.opt:hover:not(:disabled){border-color:var(--amber);background:var(--amber-dim);color:var(--amber2);}
+.opt:disabled{cursor:default;}
+.opt.chosen-wrong{border-color:var(--red)!important;background:var(--red-dim)!important;color:var(--red)!important;}
+.opt.correct{border-color:var(--teal)!important;background:var(--teal-dim)!important;color:var(--teal)!important;}
+.opt.wrong{border-color:var(--red)!important;background:var(--red-dim)!important;color:var(--red)!important;}
+.opt-k{width:20px;height:20px;background:var(--border2);border-radius:4px;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0;margin-top:1px;}
+.opt.correct .opt-k{background:var(--teal);color:#0b0d12;}
+.opt.chosen-wrong .opt-k{background:var(--red);color:#fff;}
+
+.fill-inp{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:9px 13px;font-family:var(--mono);font-size:13px;color:var(--text);width:100%;outline:none;transition:border-color .2s;margin-bottom:10px;}
+.fill-inp:focus{border-color:var(--amber);}
+.fill-inp.ok{border-color:var(--teal);color:var(--teal);}
+.fill-inp.fail{border-color:var(--red);color:var(--red);}
+.fill-inp:disabled{opacity:.8;cursor:default;}
+
+.out-line{background:#080a0f;border:1px solid var(--border2);border-radius:var(--rs);padding:10px 14px;font-family:var(--mono);font-size:12.5px;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:8px;}
+.out-sym{color:var(--amber);flex-shrink:0;}
+.out-inp{background:transparent;border:none;outline:none;font-family:var(--mono);font-size:12.5px;color:var(--text);flex:1;caret-color:var(--amber);}
+.out-inp:disabled{opacity:.8;}
+.out-inp.ok{color:var(--teal);}
+.out-inp.fail{color:var(--red);}
+
+.bug-lines{display:flex;flex-direction:column;gap:4px;margin-bottom:12px;}
+.bug-line{display:flex;align-items:flex-start;cursor:pointer;border-radius:var(--rs);overflow:hidden;transition:all .15s;}
+.bug-line:hover .bug-code{background:rgba(240,165,0,.06);border-color:var(--amber);}
+.bug-lnum{width:32px;background:var(--surface3);border:1px solid var(--border);border-right:none;padding:8px 0;text-align:center;font-family:var(--mono);font-size:11px;color:var(--text3);flex-shrink:0;}
+.bug-code{flex:1;background:#080a0f;border:1px solid var(--border2);border-left:none;padding:8px 14px;font-family:var(--mono);font-size:12px;color:var(--text);line-height:1.6;transition:all .15s;}
+.bug-line.selected .bug-lnum{background:var(--amber-dim);border-color:var(--amber);color:var(--amber);}
+.bug-line.selected .bug-code{background:var(--amber-dim);border-color:var(--amber);}
+.bug-line.chosen-wrong .bug-lnum,.bug-line.chosen-wrong .bug-code{background:var(--red-dim)!important;border-color:var(--red)!important;color:var(--red)!important;}
+.bug-line.correct-pick .bug-lnum,.bug-line.correct-pick .bug-code{background:var(--teal-dim)!important;border-color:var(--teal)!important;color:var(--teal)!important;}
+
+.match-grid{display:flex;flex-direction:column;gap:16px;margin-bottom:12px;}
+.match-col-lbl{font-size:9px;font-family:var(--mono);color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:8px;}
+.chip-pool{display:flex;flex-wrap:wrap;gap:7px;}
+.m-chip{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:7px 11px;font-family:var(--mono);font-size:11px;color:var(--text);cursor:grab;transition:all .15s;user-select:none;white-space:nowrap;}
+.m-chip:hover:not(.gone){border-color:var(--amber);color:var(--amber2);}
+.m-chip.gone{opacity:.18;pointer-events:none;}
+.m-chip.ok{border-color:var(--teal);color:var(--teal);background:var(--teal-dim);cursor:default;}
+.m-chip.fail{border-color:var(--red);color:var(--red);background:var(--red-dim);}
+.drop-rows{display:flex;flex-direction:column;gap:7px;}
+.drop-row{display:flex;align-items:center;gap:10px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--rs);padding:9px 14px;min-height:44px;}
+.drop-desc{font-size:11px;font-family:var(--mono);color:var(--text2);line-height:1.5;flex:1;min-width:0;}
+.drop-slot{flex-shrink:0;width:180px;min-height:32px;background:var(--bg);border:1px dashed var(--border2);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;transition:all .15s;padding:4px 8px;cursor:pointer;overflow:hidden;}
+.drop-slot:hover,.drop-slot.over{border-color:var(--amber);background:var(--amber-dim);}
+.drop-slot.ok{border-style:solid;border-color:var(--teal);background:var(--teal-dim);}
+.drop-slot.fail{border-style:solid;border-color:var(--red);background:var(--red-dim);}
+.slot-txt{font-family:var(--mono);font-size:11px;color:var(--amber2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:164px;}
+.slot-hint{font-size:10px;color:var(--text3);font-family:var(--mono);}
+
+.fb{border-radius:var(--rs);padding:10px 14px;font-size:12px;font-family:var(--mono);margin-top:10px;display:none;line-height:1.55;}
+.fb.show{display:block;animation:fadeIn .2s ease;}
+.fb.ok{background:var(--teal-dim);border:1px solid var(--teal);color:var(--teal);}
+.fb.fail{background:var(--red-dim);border:1px solid var(--red);color:var(--red);}
+.fb.recorded{background:var(--amber-dim);border:1px solid var(--amber);color:var(--amber);}
+
+.btn-row{display:flex;gap:9px;margin-top:14px;align-items:center;flex-wrap:wrap;}
+.btn{padding:8px 18px;border-radius:var(--rs);font-size:11px;font-family:var(--mono);font-weight:700;letter-spacing:.06em;cursor:pointer;border:1px solid;transition:all .15s;}
+.btn-pri{background:var(--amber);border-color:var(--amber);color:#0b0d12;}
+.btn-pri:hover{background:var(--amber2);}
+.btn-nxt{background:var(--surface2);border-color:var(--border2);color:var(--text2);display:none;}
+.btn-nxt.show{display:inline-flex;align-items:center;gap:5px;animation:fadeIn .3s ease;}
+.btn-nxt:hover{border-color:var(--amber);color:var(--amber);}
+
+/* ── RESULT SCREEN ── */
+.result-wrap{padding:48px 32px;text-align:center;}
+.res-glyph{font-size:52px;margin-bottom:12px;}
+.res-title{font-size:26px;font-weight:800;color:var(--amber2);margin-bottom:6px;}
+.res-sub{font-size:13px;color:var(--text2);font-family:var(--mono);margin-bottom:10px;}
+.res-id-card{display:inline-block;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:10px 20px;font-family:var(--mono);font-size:12px;margin-bottom:6px;line-height:1.8;}
+.res-id-card .val{color:var(--amber2);font-weight:700;}
+.res-ts{display:inline-block;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:10px 22px;font-family:var(--mono);font-size:13px;color:var(--text2);margin-bottom:20px;letter-spacing:.03em;}
+.res-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:440px;margin:0 auto 24px;}
+.res-stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--rs);padding:14px;}
+.res-sv{font-size:22px;font-weight:700;font-family:var(--mono);margin-bottom:3px;}
+.c-ok{color:var(--teal);}.c-fail{color:var(--red);}.c-score{color:var(--amber);}
+.res-sl{font-size:10px;color:var(--text3);font-family:var(--mono);}
+.review-block{text-align:left;max-width:580px;margin:0 auto 24px;max-height:300px;overflow-y:auto;}
+.rev-item{display:flex;align-items:center;gap:9px;padding:7px 12px;border-radius:5px;margin-bottom:4px;font-size:11px;font-family:var(--mono);}
+.rev-item.ok{background:var(--teal-dim);color:var(--teal);}
+.rev-item.fail{background:var(--red-dim);color:var(--red);}
+
+/* Locked answer key */
+.answer-key-section{max-width:580px;margin:0 auto 24px;text-align:left;}
+.answer-key-unlock{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:14px 16px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.answer-key-unlock input{background:var(--bg);border:1px solid var(--border2);border-radius:var(--rs);padding:7px 12px;font-family:var(--mono);font-size:12px;color:var(--text);outline:none;flex:1;min-width:160px;}
+.answer-key-unlock input:focus{border-color:var(--amber);}
+.answer-key-unlock button{padding:7px 16px;background:var(--amber);border:none;border-radius:var(--rs);font-family:var(--mono);font-size:11px;font-weight:700;color:#0b0d12;cursor:pointer;}
+.answer-key-body{display:none;margin-top:12px;}
+.answer-key-body.show{display:block;}
+.ak-row{display:flex;align-items:flex-start;gap:8px;padding:5px 8px;border-radius:4px;font-size:11px;font-family:var(--mono);margin-bottom:3px;}
+.ak-row:nth-child(even){background:var(--surface3);}
+.ak-num{color:var(--text3);min-width:28px;flex-shrink:0;}
+.ak-title{color:var(--text2);flex:1;}
+.ak-ans{color:var(--amber2);font-weight:700;}
+.ak-lbl{font-size:10px;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;padding:8px 8px 4px;font-family:var(--mono);}
+
+/* ── BOTTOM NAV BAR ── */
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;height:var(--bottombar-h);background:var(--surface);border-top:1px solid var(--border2);display:flex;align-items:center;justify-content:space-between;padding:0 16px;z-index:300;gap:10px;}
+.bb-nav{display:flex;align-items:center;gap:6px;}
+.bb-btn{width:40px;height:40px;background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;transition:all .15s;color:var(--text2);}
+.bb-btn:hover{border-color:var(--amber);color:var(--amber);}
+.bb-btn:disabled{opacity:.3;cursor:default;}
+.bb-qnum{font-family:var(--mono);font-size:11px;color:var(--text2);min-width:52px;text-align:center;white-space:nowrap;}
+/* .bb-dots{display:flex;align-items:center;gap:3px;flex:1;overflow:hidden;justify-content:center;flex-wrap:nowrap;}
+.bb-dot{width:8px;height:8px;border-radius:50%;background:var(--surface3);border:1px solid var(--border2);flex-shrink:0;transition:all .3s;cursor:pointer;}
+.bb-dot.current{background:var(--amber);border-color:var(--amber);box-shadow:0 0 4px var(--amber);} */
+/* .bb-dot.done-ok{background:var(--teal);border-color:var(--teal);}
+.bb-dot.done-fail{background:var(--red);border-color:var(--red);} */
+.bb-finish{padding:0 16px;height:38px;background:var(--amber);border:none;border-radius:var(--rs);font-family:var(--mono);font-size:11px;font-weight:700;color:#0b0d12;cursor:pointer;white-space:nowrap;transition:background .15s;}
+.bb-finish:hover{background:var(--amber2);}
+
+/* ── OVERLAYS ── */
+.timeup-overlay{display:none;position:fixed;inset:0;z-index:9999;background:rgba(11,13,18,.94);align-items:center;justify-content:center;}
+.timeup-overlay.show{display:flex;}
+.timeup-box{background:var(--surface);border:2px solid var(--red);border-radius:16px;padding:48px 52px;text-align:center;max-width:420px;}
+.timeup-icon{font-size:52px;margin-bottom:16px;}
+.timeup-box h2{font-size:22px;font-weight:800;color:var(--red);margin-bottom:8px;}
+.timeup-box p{font-size:12px;font-family:var(--mono);color:var(--text2);margin-bottom:24px;line-height:1.6;}
+
+/* ── WARN OVERLAY ── */
+.warn-overlay{display:none;position:fixed;inset:0;z-index:9998;background:rgba(11,13,18,.96);align-items:center;justify-content:center;}
+.warn-overlay.show{display:flex;}
+.warn-box{background:var(--surface);border:2px solid var(--red);border-radius:16px;padding:40px 44px;text-align:center;max-width:420px;width:90%;}
+.warn-icon{font-size:48px;margin-bottom:12px;}
+.warn-title{font-size:20px;font-weight:800;color:var(--red);margin-bottom:8px;font-family:var(--sans);}
+.warn-msg{font-size:12px;color:var(--text2);font-family:var(--mono);line-height:1.8;margin-bottom:6px;}
+.warn-penalty{font-size:22px;font-weight:800;color:var(--red);font-family:var(--mono);margin:10px 0 6px;}
+.warn-count{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;}
+.warn-countdown{font-size:13px;color:var(--amber);font-family:var(--mono);font-weight:700;margin-bottom:16px;}
+.warn-reload-msg{font-size:10px;color:var(--text3);font-family:var(--mono);margin-bottom:14px;line-height:1.6;}
+.warn-btn{padding:11px 32px;background:var(--red);border:none;border-radius:var(--rs);font-family:var(--mono);font-size:12px;font-weight:700;color:#fff;cursor:pointer;transition:background .15s;}
+.warn-btn:hover{background:#ff3344;}
+.fs-overlay{display:none;position:fixed;inset:0;z-index:9998;background:rgba(11,13,18,.97);align-items:center;justify-content:center;}
+.fs-overlay.show{display:flex;}
+.fs-box{background:var(--surface);border:2px solid var(--red);border-radius:16px;padding:40px 44px;text-align:center;max-width:420px;width:90%;}
+.fs-icon{font-size:48px;margin-bottom:12px;}
+.fs-title{font-size:20px;font-weight:800;color:var(--red);margin-bottom:8px;font-family:var(--sans);}
+.fs-msg{font-size:12px;color:var(--text2);font-family:var(--mono);line-height:1.8;margin-bottom:6px;}
+.fs-count{font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:12px;}
+.fs-btn{padding:11px 32px;background:var(--amber);border:none;border-radius:var(--rs);font-family:var(--mono);font-size:12px;font-weight:700;color:#0b0d12;cursor:pointer;transition:background .15s;}
+.fs-btn:hover{background:var(--amber2);}
+.fs-skip{display:none;margin-top:12px;background:transparent;border:1px solid var(--border2);color:var(--text2);font-size:11px;}
+.fs-skip:hover{border-color:var(--amber);color:var(--amber);}
+
+/* ── PREDICTION MODAL ── */
+.pred-overlay{display:none;position:fixed;inset:0;z-index:9997;background:rgba(11,13,18,.97);align-items:center;justify-content:center;}
+.pred-overlay.show{display:flex;}
+.pred-box{background:var(--surface);border:1px solid var(--border2);border-radius:16px;padding:40px 44px;text-align:center;max-width:460px;width:90%;}
+.pred-title{font-size:20px;font-weight:800;color:var(--amber2);margin-bottom:6px;font-family:var(--sans);}
+.pred-sub{font-size:11px;color:var(--text2);font-family:var(--mono);margin-bottom:28px;line-height:1.7;}
+.pred-opts{display:flex;flex-direction:column;gap:10px;}
+.pred-opt{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--rs);padding:13px 18px;cursor:pointer;transition:all .18s;text-align:left;display:flex;align-items:center;gap:14px;font-family:var(--mono);}
+.pred-opt:hover{border-color:var(--amber);background:var(--amber-dim);}
+.pred-opt-emoji{font-size:22px;flex-shrink:0;}
+.pred-opt-label{font-size:13px;font-weight:700;color:var(--amber2);}
+.pred-opt-sub{font-size:11px;color:var(--text2);margin-top:2px;}
+
+/* ── ARISTOTLE CARD ── */
+.aristotle-card{background:var(--surface2);border:1px solid var(--border2);border-radius:var(--r);padding:24px 28px;margin:20px auto 20px;max-width:580px;text-align:center;}
+.aristotle-vs{display:flex;align-items:center;justify-content:center;gap:16px;margin-bottom:18px;}
+.aristotle-vs-box{background:var(--surface);border:1px solid var(--border2);border-radius:var(--rs);padding:10px 20px;min-width:110px;}
+.aristotle-vs-label{font-size:9px;font-family:var(--mono);color:var(--text3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:4px;}
+.aristotle-vs-val{font-size:24px;font-weight:800;font-family:var(--mono);}
+.aristotle-vs-sep{font-size:18px;font-weight:800;color:var(--text3);font-family:var(--mono);}
+.aristotle-bust{font-size:36px;margin-bottom:8px;}
+.aristotle-quote{font-size:13px;color:var(--text);line-height:1.85;font-style:italic;margin-bottom:10px;font-family:var(--sans);}
+.aristotle-attr{font-size:11px;color:var(--amber);font-family:var(--mono);letter-spacing:.06em;}
+
+/* ── TRIPLE CONFIRM MODALS ── */
+.confirm-overlay{display:none;position:fixed;inset:0;z-index:9996;background:rgba(11,13,18,.96);align-items:center;justify-content:center;}
+.confirm-overlay.show{display:flex;}
+.confirm-box{background:var(--surface);border-radius:16px;padding:36px 40px;text-align:center;max-width:420px;width:90%;}
+.confirm-box.step1{border:1px solid var(--border2);}
+.confirm-box.step2{border:2px solid var(--amber);}
+.confirm-box.step3{border:2px solid var(--red);}
+.confirm-icon{font-size:40px;margin-bottom:12px;}
+.confirm-title{font-size:18px;font-weight:800;margin-bottom:8px;font-family:var(--sans);}
+.confirm-box.step1 .confirm-title{color:var(--text);}
+.confirm-box.step2 .confirm-title{color:var(--amber2);}
+.confirm-box.step3 .confirm-title{color:var(--red);}
+.confirm-msg{font-size:12px;color:var(--text2);font-family:var(--mono);line-height:1.8;margin-bottom:6px;}
+.confirm-unanswered{font-size:13px;font-weight:700;color:var(--red);font-family:var(--mono);margin:8px 0 16px;}
+.confirm-btns{display:flex;flex-direction:column;gap:9px;margin-top:20px;}
+.confirm-back{padding:10px;background:transparent;border:1px solid var(--border2);border-radius:var(--rs);font-family:var(--mono);font-size:11px;color:var(--text2);cursor:pointer;transition:all .15s;}
+.confirm-back:hover{border-color:var(--amber);color:var(--amber);}
+.confirm-proceed{padding:12px;background:var(--amber);border:none;border-radius:var(--rs);font-family:var(--mono);font-size:12px;font-weight:700;color:#0b0d12;cursor:pointer;transition:background .15s;}
+.confirm-proceed:hover{background:var(--amber2);}
+.confirm-box.step3 .confirm-proceed{background:var(--red);color:#fff;}
+.confirm-box.step3 .confirm-proceed:hover{background:#ff3344;}
+
+/* ── LIGATURE FIX ── */
+*{font-variant-ligatures:none;}
+code,.code-block,pre,span,body,p,div,li,td,th,label,button{font-variant-ligatures:none;font-feature-settings:"liga" 0,"calt" 0;}
+.code,.bug-code,.out-line{user-select:none;-webkit-user-select:none;}
+
+/* ── DEVTOOLS BLOCKED ── */
+#devtools-block{display:none;position:fixed;inset:0;z-index:99999;background:#0b0d12;align-items:center;justify-content:center;text-align:center;flex-direction:column;gap:16px;}
+#devtools-block.show{display:flex;}
+#devtools-block h2{color:var(--red);font-size:24px;font-weight:800;font-family:var(--sans);}
+#devtools-block p{color:var(--text2);font-size:13px;font-family:var(--mono);line-height:1.7;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:var(--surface);}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* ══════════════════════════════════════
+   MOBILE RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:700px){
+  /* hide sidebar entirely on mobile */
+  .sidebar{display:none!important;}
+  .layout{grid-template-columns:1fr;}
+  /* strip header down */
+  .hdr{padding:0 14px;height:52px;}
+  .brand,.prog-wrap,.user-tag{display:none!important;}
+  .hdr-right{gap:8px;width:100%;justify-content:flex-end;}
+  .score-tag{font-size:12px;padding:4px 10px;}
+  .gtimer-lbl{display:none;}
+  /* main content */
+  .main{padding:16px 14px 14px;}
+  .card-body{padding:14px 14px;}
+  .q-text{font-size:15px;}
+  /* MC options single column, bigger touch targets */
+  .opts{grid-template-columns:1fr!important;}
+  .opt{min-height:52px;font-size:13px;padding:13px 14px;}
+  /* fill/predict inputs */
+  .fill-inp,.out-inp{font-size:15px;padding:12px 14px;}
+  .out-line{padding:12px 14px;}
+  /* match drop slots full width */
+  .drop-row{flex-direction:column;align-items:flex-start;}
+  .drop-slot{width:100%;min-height:44px;}
+  /* code block */
+  .code{font-size:12px;padding:12px;}
+  /* bug lines */
+  .bug-code{font-size:11px;padding:8px 10px;}
+  /* bottom bar dots: fewer visible */
+  .bb-dots{gap:2px;}
+  .bb-dot{width:6px;height:6px;}
+  /* btn row */
+  .btn-row{gap:8px;}
+  .btn{padding:10px 16px;font-size:12px;}
+  /* result */
+  .result-wrap{padding:24px 16px;}
+  .res-stats{grid-template-columns:repeat(2,1fr);}
+  .answer-key-unlock{flex-direction:column;}
+}
+
+</style>
+</head>
+<body>
+
+<!-- DevTools block screen -->
+<div id="devtools-block">
+  <div style="font-size:52px">🔒</div>
+  <h2>Developer Tools Detected</h2>
+  <p>This activity cannot be taken with DevTools open.<br>Close DevTools to continue.</p>
+</div>
+
+<!-- Login -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">C++</div>
+    <div class="login-title">CodeLab Activity</div>
+    <div class="login-sub">Basic to loops · 60 min</div>
+    <div class="login-field">
+      <label>Student ID Number</label>
+      <input type="text" class="login-input" id="login-id" placeholder="e.g. 23-19390" autocomplete="off" spellcheck="false">
+      <div class="login-hint" id="login-hint"></div>
+    </div>
+    <div class="login-welcome" id="login-welcome"></div>
+    <button class="login-btn" id="login-btn" onclick="attemptLogin()" disabled>Verify &amp; Start Activity</button>
+    <p class="login-notice">Enter your ID number exactly as provided.</p>
+  </div>
+</div>
+
+<!-- App Shell -->
+<div id="app-shell">
+  <header class="hdr">
+    <div class="brand">
+      <div class="brand-ico">C++</div>
+      <div>
+        <div class="brand-title">CodeLab Activity</div>
+        <div class="brand-sub">Basic - Loops</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="user-tag" id="user-tag"></div>
+      <div class="prog-wrap">
+        <span class="prog-lbl" id="prog-lbl">0 / 100</span>
+        <div class="prog-track"><div class="prog-fill" id="prog-fill"></div></div>
+      </div>
+      <button id="theme-toggle" class="theme-btn" onclick="toggleTheme()">☀️</button>
+      <!-- <div class="score-tag" id="score-tag">Score: Unknown</div> -->
+      <div class="gtimer">
+        <div class="gtimer-dot" id="gtimer-dot"></div>
+        <div class="gtimer-num" id="gtimer-num">60:00</div>
+        <div class="gtimer-lbl">remaining</div>
+      </div>
+    </div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <div class="sb-lbl">Questions</div>
+      <div id="nav-root"></div>
+      <div id="nav-result-wrap" style="display:none">
+        <div class="sb-lbl" style="margin-top:8px;">Summary</div>
+        <div class="nav-it" onclick="triggerFinishFlow()">
+          <div class="nav-n" style="background:var(--amber);border-color:var(--amber);color:#0b0d12;font-weight:700;">★</div>
+          <div class="nav-txt">View Results</div>
+        </div>
+      </div>
+    </aside>
+    <main class="main">
+      <div id="screens-root"></div>
+      <div class="screen" id="screen-result">
+        <div class="result-wrap">
+          <div class="res-glyph" id="res-emoji">🎉</div>
+          <div class="res-title">Activity Complete!</div>
+          <div class="res-sub">Basic - Loops</div>
+          <div class="res-id-card" id="res-id-card"></div>
+          <div class="aristotle-card" id="aristotle-card" style="display:none;">
+            <div class="aristotle-vs">
+              <div class="aristotle-vs-box">
+                <div class="aristotle-vs-label">You predicted</div>
+                <div class="aristotle-vs-val" id="aris-pred-val" style="color:var(--blue)">—</div>
+              </div>
+              <div class="aristotle-vs-sep">vs</div>
+              <div class="aristotle-vs-box">
+                <div class="aristotle-vs-label">You scored</div>
+                <div class="aristotle-vs-val" id="aris-score-val">0</div>
+              </div>
+            </div>
+            <div class="aristotle-bust">🏛️</div>
+            <div class="aristotle-quote" id="aris-quote"></div>
+            <div class="aristotle-attr">— Aristotle</div>
+          </div>
+          <div class="res-ts" id="res-ts"></div>
+          <div class="res-stats">
+            <div class="res-stat"><div class="res-sv c-ok" id="r-ok">0</div><div class="res-sl">Correct</div></div>
+            <div class="res-stat"><div class="res-sv c-fail" id="r-fail">0</div><div class="res-sl">Incorrect</div></div>
+            <div class="res-stat"><div class="res-sv c-score" id="r-pct">0%</div><div class="res-sl">Score</div></div>
+            <div class="res-stat"><div class="res-sv c-fail" id="r-tabswitch">0</div><div class="res-sl">Incidents</div></div>
+            <div class="res-stat"><div class="res-sv c-fail" id="r-screenshot">0</div><div class="res-sl">Screenshot tries</div></div>
+            <div class="res-stat"><div class="res-sv c-fail" id="r-penalty">−0 pts</div><div class="res-sl">Penalty</div></div>
+          </div>
+          <div class="review-block" id="review-block"></div>
+          <!-- Answer Key -->
+          <div class="answer-key-section" id="answer-key-section">
+            <div class="answer-key-unlock">
+              <span style="font-size:11px;font-family:var(--mono);color:var(--text3);white-space:nowrap;">🔒 Answer Key</span>
+              <input type="password" id="ak-password" placeholder="Enter password to unlock…">
+              <button onclick="unlockAnswerKey()">Unlock</button>
+            </div>
+            <div class="answer-key-body" id="answer-key-body"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <div class="bottom-bar" id="bottom-bar">
+    <div class="bb-nav">
+      <button class="bb-btn" id="bb-prev" onclick="bbPrev()" title="Previous">◀</button>
+      <span class="bb-qnum" id="bb-qnum">Q1 / 50</span>
+      <button class="bb-btn" id="bb-next" onclick="bbNext()" title="Next">▶</button>
+    </div>
+    <div class="bb-dots" id="bb-dots"></div>
+    <button class="bb-finish" onclick="triggerFinishFlow()">✔ Finish</button>
+  </div>
+</div>
+
+<!-- Time Up -->
+<div class="timeup-overlay" id="timeup-overlay">
+  <div class="timeup-box">
+    <div class="timeup-icon">⏰</div>
+    <h2>Time's Up!</h2>
+    <p>Your 60-minute activity time has expired.<br>Unanswered questions are marked incorrect.</p>
+    <button class="btn btn-pri" style="padding:12px 32px;" onclick="forceFinish()">View My Results →</button>
+  </div>
+</div>
+
+<!-- Tab-leave warning -->
+<div class="warn-overlay" id="warn-overlay">
+  <div class="warn-box">
+    <div class="warn-icon">⚠️</div>
+    <div class="warn-title">Security Violation Detected</div>
+    <div class="warn-msg">You left this activity window.<br>This incident has been recorded.</div>
+    <div class="warn-penalty">−5 penalty points</div>
+    <div class="warn-count" id="warn-count">Incident #1</div>
+    <div class="warn-countdown" id="warn-countdown">Auto-closing in 5s</div>
+    <div class="warn-reload-msg">⚠ Reloading or closing the page will lose all progress.</div>
+    <button class="warn-btn" onclick="dismissWarning()">I Understand — Return to Activity</button>
+  </div>
+</div>
+
+<!-- Fullscreen enforcement -->
+<div class="fs-overlay" id="fs-overlay">
+  <div class="fs-box">
+    <div class="fs-icon">🛡️</div>
+    <div class="fs-title">Fullscreen Required</div>
+    <div class="fs-msg" id="fs-msg">You exited fullscreen. Re-enter fullscreen to continue this activity.</div>
+    <div id="fs-penalty-block">
+    <div class="warn-penalty" id="fs-penalty-line">−5 penalty points</div>
+    <div class="fs-count" id="fs-count">Incident #1</div>
+    </div>
+    <button type="button" class="fs-btn" onclick="reenterFullscreen()">Re-enter Fullscreen</button>
+    <button type="button" class="fs-btn fs-skip" id="fs-skip-mobile" onclick="skipMobileFullscreenExam()">Continue without fullscreen (phone / tablet)</button>
+  </div>
+</div>
+
+<!-- Prediction modal -->
+<div class="pred-overlay" id="pred-overlay">
+  <div class="pred-box">
+    <div class="pred-title">Before you begin…</div>
+    <div class="pred-sub">What score do you honestly expect to get?<br>This is just for you — be truthful.</div>
+    <div class="pred-opts">
+      <div class="pred-opt" onclick="setPrediction('46-50')">
+        <span class="pred-opt-emoji">🎯</span>
+        <div><div class="pred-opt-label">46 – 50</div><div class="pred-opt-sub">"I've got this. I'm fully prepared."</div></div>
+      </div>
+      <div class="pred-opt" onclick="setPrediction('35-45')">
+        <span class="pred-opt-emoji">💪</span>
+        <div><div class="pred-opt-label">35 – 45</div><div class="pred-opt-sub">"Feeling confident, might slip on a few."</div></div>
+      </div>
+      <div class="pred-opt" onclick="setPrediction('25-34')">
+        <span class="pred-opt-emoji">🤔</span>
+        <div><div class="pred-opt-label">25 – 34</div><div class="pred-opt-sub">"I'll try my best."</div></div>
+      </div>
+      <div class="pred-opt" onclick="setPrediction('0-24')">
+        <span class="pred-opt-emoji">😅</span>
+        <div><div class="pred-opt-label">0 – 24</div><div class="pred-opt-sub">"Just going for it."</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Triple Confirm Modals -->
+<div class="confirm-overlay" id="confirm-overlay-1">
+  <div class="confirm-box step1">
+    <div class="confirm-icon">📋</div>
+    <div class="confirm-title">Finish the Activity?</div>
+    <div class="confirm-msg">You're about to submit your answers.</div>
+    <div class="confirm-unanswered" id="confirm-unanswered-1"></div>
+    <div class="confirm-btns">
+      <button class="confirm-proceed" onclick="confirmStep2()">Continue →</button>
+      <button class="confirm-back" onclick="closeConfirm()">← Go Back</button>
+    </div>
+  </div>
+</div>
+<div class="confirm-overlay" id="confirm-overlay-2">
+  <div class="confirm-box step2">
+    <div class="confirm-icon">⚠️</div>
+    <div class="confirm-title">Really Sure?</div>
+    <div class="confirm-msg">Unanswered questions will be marked as <strong style="color:var(--red)">incorrect</strong>.<br>This action is <strong>permanent</strong> — you cannot go back.</div>
+    <div class="confirm-btns">
+      <button class="confirm-proceed" onclick="confirmStep3()">Yes, I'm Sure →</button>
+      <button class="confirm-back" onclick="closeConfirm()">← Go Back</button>
+    </div>
+  </div>
+</div>
+<div class="confirm-overlay" id="confirm-overlay-3">
+  <div class="confirm-box step3">
+    <div class="confirm-icon">🔴</div>
+    <div class="confirm-title">Last Chance!</div>
+    <div class="confirm-msg">Once submitted, the activity is <strong>locked</strong>.<br>No changes can be made.</div>
+    <div class="confirm-btns">
+      <button class="confirm-proceed" onclick="finalSubmit()">Submit Final Answers</button>
+      <button class="confirm-back" onclick="closeConfirm()">← Go Back</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleTheme() {
+  const body = document.body;
+  const btn = document.getElementById('theme-toggle');
+  
+  // Toggles the class on or off
+  body.classList.toggle('light-mode');
+  
+  // Changes the button text based on the active theme
+  if (body.classList.contains('light-mode')) {
+    btn.innerText = '🌙';
+  } else {
+    btn.innerText = '☀️';
+  }
+}
+// ── COPY & KEY PROTECTION ────────────────────────
+document.addEventListener('contextmenu',e=>e.preventDefault());
+document.addEventListener('keydown',e=>{
+  if(e.ctrlKey&&['c','a','u','s','p'].includes(e.key.toLowerCase()))e.preventDefault();
+  if(e.key==='F5'||(e.ctrlKey&&e.key.toLowerCase()==='r'))e.preventDefault();
+  if(e.key==='F12')e.preventDefault();
+  if(e.ctrlKey&&e.shiftKey&&['i','j','c'].includes(e.key.toLowerCase()))e.preventDefault();
+});
+
+// ── DEVTOOLS DETECTION ───────────────────────────
+(function devBlock(){
+  function check(){
+    const t=performance.now();
+    debugger;
+    if(performance.now()-t>100){
+      document.getElementById('devtools-block')?.classList.add('show');
+    } else {
+      document.getElementById('devtools-block')?.classList.remove('show');
+    }
+  }
+  setInterval(check,1000);
+  const threshold=160;
+  const sizeCheck=()=>{
+    const widthDiff=window.outerWidth-window.innerWidth>threshold;
+    const heightDiff=window.outerHeight-window.innerHeight>threshold;
+    if(widthDiff||heightDiff){
+      document.getElementById('devtools-block')?.classList.add('show');
+    } else {
+      document.getElementById('devtools-block')?.classList.remove('show');
+    }
+  };
+  window.addEventListener('resize',sizeCheck);
+  sizeCheck();
+})();
+
+// ── PULL-TO-REFRESH BLOCK ────────────────────────
+let lastTouchY=0;
+document.addEventListener('touchstart',e=>{lastTouchY=e.touches[0].clientY;},{passive:false});
+document.addEventListener('touchmove',e=>{
+  const dy=e.touches[0].clientY-lastTouchY;
+  if(dy>0&&window.scrollY===0)e.preventDefault();
+},{passive:false});
+
+// ── ROSTER ──────────────────────────────────────
+const ROSTER = {
+  "22-10257":"Abad, Noble Agagon",
+  "24-113347":"Abad, Rexther Aquino",
+  "22-10647":"Agabas, Redentor Ao-as",
+  "25-114742":"Addamo, Jasmine Mosing",
+  "25-115412":"Alib-on, Marian Eppes",
+  "25-115305":"Almeda, Mark Anthony Dumawat",
+  "25-115327":"Alwiyao, Pyra Lunes",
+  "25-116941":"Amangao, Jordan Bonggawen",
+  "23-18740":"Ampoc, Abigail Awid",
+  "24-112684":"Ampilis, Restler Gonnay",
+  "23-110233":"Anggowos, Alethea Judea Dumpao",
+  "24-113590":"Ansang, Kevin Dawagan",
+  "25-114789":"Ariel, Jonathan Velasquez",
+  "25-115300":"Awing, Jerrymi Gaybon",
+  "23-19390":"Badong, Denver Bagwingan",
+  "23-19881":"Baes, Ryan Clyde Brillantes",
+  "23-19348":"Bagni, Cyrill Jack Lang-ay",
+  "24-113404":"Baglinit, Kian Vince Liagao",
+  "24-113600":"Baguiwan, Farah Shane Bantor",
+  "23-18751":"Balaleng, Christian Gerald Soriano",
+  "23-110712":"Balansi, Jared Alinduat",
+  "25-115265":"Balawag, Bella Tiwang",
+  "25-114774":"Baliwag, Rocky Lumbaya",
+  "25-116177":"Bangngayon, Braile Sangdaan",
+  "24-113299":"Basitao, Mark Anthony Dangani",
+  "23-110113":"Bog-ac, Freda Sullin",
+  "25-115092":"Bolos, Kate Angel Tawagon",
+  "23-110484":"Bommosao, Jamaica Lagwasi",
+  "25-115383":"Bunagan, Jesica Dawaton",
+  "25-115517":"Cacatian, Milkee Lorain Buccao",
+  "24-214190":"Cagdan, Donalyn Dayacus",
+  "20-01749":"Caligner, Ham Bitao",
+  "24-111766":"Camaddo, Erica Jane Baluga",
+  "25-114779":"Cammagay, Christine Jea Dela Torre",
+  "22-10033":"Camayang, Kenny Joy Manadao",
+  "23-19761":"Coplaten, Jhacel Beo Aquino",
+  "24-112829":"Dalwines, Ivie Rose Anggaboy",
+  "23-19774":"Dappay, Kyle Anniban",
+  "23-110443":"Dasayon, Jesbert Agusil",
+  "23-19259":"Dayawon, Nathaniel Recto",
+  "23-211235":"Dela Cruz, Melvin Licuanan",
+  "14-11811":"Dickly, Ralph Clinton Tumalding",
+  "24-112486":"Dompi, Ashlei Bulawit",
+  "20-00411":"Dumacyon, Abegail Daogas",
+  "23-110453":"Duclawit, John Rey Moctao",
+  "24-113841":"Ducusin, Aaron James Ay-yoc",
+  "24-113265":"Duguit, Alexander Ramirez",
+  "23-19211":"Esican, Goldamir Dumilam",
+  "19-10382":"Flores, Christian Dave Geron",
+  "22-10319":"Flores, Romelio Asencio Jr.",
+  "23-18718":"Gaano, Galeli Paran",
+  "21-11642":"Gacayon, Ryan Dagsi",
+  "21-20063":"Gandalera, Jefferson Lumbaya",
+  "23-19922":"Ganon, Glady Gothos",
+  "25-115406":"Galong, Kristal Joy Bulayang",
+  "24-113232":"Gamongan, Romando Wandaga Jr",
+  "23-18755":"Garcia, Gerald Liw-liw",
+  "23-110324":"Gasatan, Rafael Dona-al",
+  "23-19884":"Gayagay, Aaron Dawaton",
+  "23-19005":"Gayyaman, Kobi Oga-oy",
+  "24-113263":"Gonnay, Shaira Mae Toppi",
+  "25-114665":"Gonzales, Mika Ella Samuel",
+  "23-18952":"Goyagoy, Bea Banson",
+  "24-113356":"Guiawan, April Jen Gupa-al",
+  "25-116262":"Gudayon, Mievan Rohe Lingayo",
+  "23-19994":"Gumanab, Lander Ambayoyong",
+  "23-110005":"Gunaban, Lemuel Chumawar",
+  "23-19202":"Jose, Virny Carl Carbonel",
+  "23-110251":"Lapaddic, Daver Goef Dimmog",
+  "24-113294":"Lay-og, Evandel Maggay",
+  "23-110502":"Lasang, Laiza Beth Basungit",
+  "23-110054":"Lassin, Rudy Tayab",
+  "24-111782":"Lassin, Sherwin Palat",
+  "23-19667":"Liyaban, Rowell Saguibo",
+  "25-116943":"Magalim, Jerwin Bang-as",
+  "24-112689":"Magmao, Mark Fawas",
+  "23-19254":"Mandiguing, Jeyoh Bantiag",
+  "24-113099":"Manuel, Sidrac Cuantis",
+  "25-116783":"Maribbay, Owenn Destiny Dangiwan",
+  "23-19382":"Nieves, Riza Mundo",
+  "23-18976":"Oggas, June Kaiseir Magwangan",
+  "24-214079":"Osalla, Orlando Jr. Gurengad",
+  "23-19225":"Pacites, Shawie Khate Sabawil",
+  "23-110480":"Pallogan, Daryl Tucnang",
+  "25-115788":"Panabang, Rafael Garzon",
+  "24-113701":"Pascua, Sheena Cleen Dalingay",
+  "20-10026":"Ramos, Jan Chynne Myrrh Duclayan",
+  "23-19280":"Rimando, Ian Almeda",
+  "25-116784":"Ritual, Cendric Castueras",
+  "24-113994":"Sabino, Jomel Canao",
+  "24-111524":"Saliw-an, Rundel Bangao",
+  "25-116949":"Salingbay, Rolando Linnayao",
+  "23-19241":"Samoy, Jay-ar Bagiwong",
+  "24-112705":"Sapao, David Tandingan",
+  "25-115427":"Sawadan, Jeslee Lammawin",
+  "24-113253":"Sawatang, Irish Paclay",
+  "25-115149":"Siblawan, Bernard Javilla",
+  "25-116164":"Silao, Dimple Tiggangay",
+  "21-10145":"Suma-il, Marcelo Sao-ic Jr.",
+  "23-19999":"Tagaban, Reanne Heart Toledo",
+  "23-19317":"Tambao, Darling Oribes",
+  "19-10815":"Tega, Rynedel Viernes",
+  "24-113035":"Tolentino, Ruzel Clyde Diocares",
+  "24-113229":"Valdez, Justine Dave Ngayom",
+  "24-113456":"Wangli, Derick Carl Lumasi",
+  "22-11236":"Warding, Joshua Macoy M.",
+  "1234567890":"Admin",
+  "123456789":"Admin",
+  "12345678":"Admin",
+  "1234567":"Admin",
+  "123456":"Admin",
+  "12345":"Admin",
+  "1234":"Admin",
+  "123":"Admin",
+  "12":"Admin",
+  "1":"Admin",
+};
+
+
+// ── LOGIN ────────────────────────────────────────
+let currentUser = null;
+
+document.getElementById('login-id').addEventListener('input', () => {
+  const id = document.getElementById('login-id').value.trim();
+  
+  if (!id) {
+    document.getElementById('login-id').className = 'login-input';
+    document.getElementById('login-hint').textContent = '';
+    document.getElementById('login-hint').className = 'login-hint';
+    document.getElementById('login-welcome').style.display = 'none';
+    document.getElementById('login-btn').disabled = true;
+    return;
+  }
+
+  // --- NEW LOCAL STORAGE CHECK (Real-time feedback) ---
+  const savedScore = localStorage.getItem(`cpp_assessment_${id}`);
+  if (savedScore !== null) {
+    document.getElementById('login-id').className = 'login-input err';
+    document.getElementById('login-hint').textContent = `✗ Test already completed. Score: ${savedScore}`;
+    document.getElementById('login-hint').className = 'login-hint err';
+    document.getElementById('login-welcome').style.display = 'none';
+    document.getElementById('login-btn').disabled = true;
+    return; // Stops further checks
+  }
+  // ----------------------------------------------------
+
+  const name = ROSTER[id];
+  if (name) {
+    document.getElementById('login-id').className = 'login-input ok';
+    document.getElementById('login-hint').textContent = '✓ ID recognized';
+    document.getElementById('login-hint').className = 'login-hint ok';
+    document.getElementById('login-welcome').innerHTML = `Welcome, <strong>${name}</strong>!<br>Topic: C++ Basics to Loops &nbsp;·&nbsp; 100 questions &nbsp;·&nbsp; 60 min`;
+    document.getElementById('login-welcome').style.display = 'block';
+    document.getElementById('login-btn').disabled = false;
+  } else {
+    document.getElementById('login-id').className = 'login-input err';
+    document.getElementById('login-hint').textContent = '✗ ID not found in roster';
+    document.getElementById('login-hint').className = 'login-hint err';
+    document.getElementById('login-welcome').style.display = 'none';
+    document.getElementById('login-btn').disabled = true;
+  }
+});
+
+function attemptLogin() {
+  const id = document.getElementById('login-id').value.trim();
+  const name = ROSTER[id];
+  if (!name) return;
+
+  const savedScore = localStorage.getItem(`cpp_assessment_${id}`);
+  if (savedScore !== null) {
+    alert("Test already submitted!");
+    return;
+  }
+
+  currentUser = { id, name };
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app-shell').style.display = 'block';
+  document.getElementById('user-tag').textContent = name;
+
+  const resumed = restoreProgress(id);
+  if(resumed){
+    buildNav(); buildScreens(); buildBottomDots();
+    // re-lock already answered questions visually
+    Q.forEach((_,i)=>{
+      if(scores[i]!==null){
+        const fb=document.getElementById('fb-'+i);
+        if(fb){fb.className='fb show recorded';fb.textContent='✔ Answer recorded.';}
+        const sub=document.getElementById('sub-'+i);if(sub)sub.disabled=true;
+        const nav=document.getElementById('nav-'+i);
+        if(nav){nav.classList.remove('done-ok','done-fail');nav.classList.add(scores[i]?'done-ok':'done-fail');}
+        // disable inputs
+        const fill=document.getElementById('fill-'+i);if(fill)fill.disabled=true;
+        document.querySelectorAll('#opts-'+i+' .opt').forEach(o=>o.disabled=true);
+        document.querySelectorAll('#buglines-'+i+' .bug-line').forEach(el=>el.onclick=null);
+        q_inputs_disable(i);
+        if(i<TOTAL-1)document.getElementById('nxt-'+i)?.classList.add('show');
+      }
+    });
+    const ans=scores.filter(s=>s!==null).length;
+    const ok=scores.filter(s=>s===true).length;
+    document.getElementById('prog-lbl').textContent=`${ans} / ${TOTAL}`;
+    document.getElementById('prog-fill').style.width=(ans/TOTAL*100)+'%';
+    updateScoreDisplay();
+    goTo(scores.findIndex(s=>s===null)>=0?scores.findIndex(s=>s===null):0);
+    startTimer();
+    activityStarted=true;
+    if(!isFullscreenActive()&&!mobileFullscreenBypass)showFullscreenOverlay('Resume requires fullscreen mode. Re-enter fullscreen to continue.',{showSkipButton:isMobileExamDevice()});
+  } else {
+    initActivity();
+    document.getElementById('pred-overlay').classList.add('show');
+  }
+}
+
+function q_inputs_disable(i){
+  if(!Q[i])return;
+  if(Q[i].type==='predict'){
+    Q[i].inputs.forEach(inp=>{
+      const el=document.getElementById('inp-'+i+'-'+inp.id);
+      if(el)el.disabled=true;
+    });
+  }
+}
+
+// ── TIMER ────────────────────────────────────────
+let timerSecs=60*60,timerIv=null,finished=false;
+
+function startTimer(){
+  timerIv=setInterval(()=>{
+    timerSecs--;updateTimerUI();
+    if(timerSecs%30===0)saveProgress();
+    if(timerSecs<=0){clearInterval(timerIv);timeUp();}
+  },1000);
+}
+function updateTimerUI(){
+  const m=Math.floor(Math.abs(timerSecs)/60),s=Math.abs(timerSecs)%60;
+  const str=(timerSecs<0?'-':'')+m+':'+String(s).padStart(2,'0');
+  const el=document.getElementById('gtimer-num');
+  const dot=document.getElementById('gtimer-dot');
+  el.textContent=str;
+  if(finished){el.className='gtimer-num off';dot.className='gtimer-dot off';return;}
+  if(timerSecs<=120){el.className='gtimer-num urgent';dot.className='gtimer-dot urgent';}
+  else if(timerSecs<=600){el.className='gtimer-num warn';dot.className='gtimer-dot warn';}
+}
+function timeUp(){document.getElementById('timeup-overlay').classList.add('show');}
+function forceFinish(){
+  document.getElementById('timeup-overlay').classList.remove('show');
+  scores=scores.map(s=>s===null?false:s);
+  clearProgress();
+  showResult();
+}
+
+// ── QUESTION BANK ─────────────────────────────────
+const QBANK = [
+{id:1,title:'Basics — entry point',type:'mc',diff:'easy',
+ q:'Which of the following is the correct entry point for a standard C++ program?',
+ opts:['void start()','int main()','main: int()','public static void main()'],correct:1,
+ fb_ok:'✓ Correct. Execution always begins at int main().',
+ fb_fail:'✗ Incorrect. The entry point must be int main().'},
+
+{id:2,title:'Basics — standard I/O header',type:'fill',diff:'easy',
+ code:`<span class="kw">#include</span> <span class="op">&lt;</span><span class="var">________</span><span class="op">&gt;</span>`,
+ q:'Include the standard library header needed for input and output operations.',
+ ph:'header name',answers:['iostream'],
+ fb_ok:'✓ Correct. iostream handles basic I/O in C++.',
+ fb_fail:'✗ Incorrect. The correct header is iostream.'},
+
+{id:3,title:'Basics — missing semicolon',type:'bug',diff:'med',
+ q:'Identify the line causing a syntax error.',
+ buglines:[
+   {ln:1,code:`<span class="kw">#include</span> <span class="op">&lt;</span><span class="var">iostream</span><span class="op">&gt;</span>`},
+   {ln:2,code:`<span class="kw">using namespace</span> <span class="var">std</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="kw">int</span> <span class="var">main</span><span class="punct">() {</span>`},
+   {ln:4,code:`    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Welcome to KSU"</span>`},
+   {ln:5,code:`    <span class="kw">return</span> <span class="num">0</span><span class="punct">;</span>`},
+   {ln:6,code:`<span class="punct">}</span>`}
+ ],correctLine:4,
+ fb_ok:'✓ Correct. Line 4 is missing a semicolon at the end.',
+ fb_fail:'✗ Incorrect. Look closely at the end of the print statement on line 4.'},
+
+{id:4,title:'I/O — formatted stream',type:'predict',diff:'med',
+ code:`<span class="kw">int</span> <span class="var">year</span> <span class="op">=</span> <span class="num">2026</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Year:"</span> <span class="op">&lt;&lt;</span> <span class="var">year</span><span class="punct">;</span>`,
+ q:'Predict the exact output of this formatted stream.',
+ inputs:[{id:'p4a',sym:'$',ph:'exact output...'}],
+ answers:['Year:2026'],
+ fb_ok:'✓ Correct. It concatenates the string and variable without spaces.',
+ fb_fail:'✗ Incorrect. Note the exact spacing (or lack thereof) in the output string.'},
+
+{id:5,title:'Variables — uninitialized',type:'mc',diff:'med',
+ code:`<span class="kw">int</span> <span class="var">x</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span><span class="punct">;</span>`,
+ q:'What happens if you attempt to use an uninitialized local integer variable?',
+ opts:['It prints 0','It throws a compilation error','It prints a garbage value','It causes a runtime crash'],correct:2,
+ fb_ok:'✓ Correct. Uninitialized local variables hold indeterminate (garbage) values.',
+ fb_fail:'✗ Incorrect. Local variables do not default to 0 in C++; they hold garbage values.'},
+
+{id:6,title:'Variables — constant declaration',type:'fill',diff:'easy',
+ code:`<span class="kw">____</span> <span class="kw">double</span> <span class="var">PI</span> <span class="op">=</span> <span class="num">3.14159</span><span class="punct">;</span>`,
+ q:'Provide the keyword to declare a variable whose value cannot be changed.',
+ ph:'keyword',answers:['const'],
+ fb_ok:'✓ Correct. The const keyword makes a variable read-only.',
+ fb_fail:'✗ Incorrect. Use the const keyword.'},
+
+{id:7,title:'Conditionals — overlapping conditions',type:'bug',diff:'hard',
+ q:'Find the logic bug in this if-statement that assigns grades.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">score</span> <span class="op">=</span> <span class="num">85</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">if</span><span class="punct">(</span><span class="var">score</span> <span class="op">&gt;</span> <span class="num">70</span><span class="punct">)</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"C"</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="kw">else if</span><span class="punct">(</span><span class="var">score</span> <span class="op">&gt;</span> <span class="num">80</span><span class="punct">)</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"B"</span><span class="punct">;</span>`},
+   {ln:4,code:`<span class="kw">else</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"F"</span><span class="punct">;</span>`}
+ ],correctLine:2,
+ fb_ok:'✓ Correct. 85 triggers the first true condition (> 70) and prints "C" instead of evaluating for "B".',
+ fb_fail:'✗ Incorrect. Look at the order in which the conditions are evaluated from top to bottom.'},
+
+{id:8,title:'Conditionals — switch rules',type:'mc',diff:'med',
+ q:'Which statement about the <code>switch</code> construct is true in C++?',
+ opts:['It can evaluate string variables.','The default case is mandatory.','A break statement is required to prevent fall-through.','It can evaluate floating-point numbers.'],correct:2,
+ fb_ok:'✓ Correct. Without a break, execution falls through to the next case.',
+ fb_fail:'✗ Incorrect. A break is needed to stop fall-through. Switch only works on integral types.'},
+
+{id:9,title:'Conditionals — ternary operator',type:'predict',diff:'med',
+ code:`<span class="kw">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">10</span><span class="punct">,</span> <span class="var">b</span> <span class="op">=</span> <span class="num">20</span><span class="punct">;</span>\n<span class="kw">string</span> <span class="var">res</span> <span class="op">=</span> <span class="punct">(</span><span class="var">a</span> <span class="op">&gt;</span> <span class="var">b</span><span class="punct">)</span> <span class="op">?</span> <span class="str">"Greater"</span> <span class="op">:</span> <span class="str">"Lesser"</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">res</span><span class="punct">;</span>`,
+ q:'Predict the output of this ternary operation.',
+ inputs:[{id:'p9a',sym:'$',ph:'exact output...'}],
+ answers:['Lesser'],
+ fb_ok:'✓ Correct. Since 10 is not greater than 20, the second option is chosen.',
+ fb_fail:'✗ Incorrect. Evaluate the boolean expression before the question mark.'},
+
+{id:10,title:'Math — power function',type:'fill',diff:'med',
+ code:`<span class="kw">double</span> <span class="var">result</span> <span class="op">=</span> <span class="kw">____</span><span class="punct">(</span><span class="num">2.0</span><span class="punct">,</span> <span class="num">4.0</span><span class="punct">);</span>`,
+ q:'Fill in the function from the <code>&lt;cmath&gt;</code> library used to calculate 2 to the power of 4.',
+ ph:'function',answers:['pow'],
+ fb_ok:'✓ Correct. pow(base, exponent) is used.',
+ fb_fail:'✗ Incorrect. Use the pow function.'},
+
+{id:11,title:'Math — integer division',type:'mc',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">15</span><span class="punct">;</span>\n<span class="kw">int</span> <span class="var">y</span> <span class="op">=</span> <span class="num">4</span><span class="punct">;</span>\n<span class="kw">float</span> <span class="var">z</span> <span class="op">=</span> <span class="var">x</span> <span class="op">/</span> <span class="var">y</span><span class="punct">;</span>`,
+ q:'What is the result of integer division in this scenario?',
+ opts:['3.75','4.0','3.0','Compile Error'],correct:2,
+ fb_ok:'✓ Correct. The integer division (15 / 4) happens first resulting in 3, which is then cast to float 3.0.',
+ fb_fail:'✗ Incorrect. Integer division truncates the decimal before assigning it to the float variable.'},
+
+{id:12,title:'Math — modulo operator',type:'predict',diff:'med',
+ code:`<span class="kw">int</span> <span class="var">remainder</span> <span class="op">=</span> <span class="num">17</span> <span class="op">%</span> <span class="num">5</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">remainder</span><span class="punct">;</span>`,
+ q:'Predict the output of the modulo operator.',
+ inputs:[{id:'p12a',sym:'$',ph:'number...'}],
+ answers:['2'],
+ fb_ok:'✓ Correct. 17 divided by 5 leaves a remainder of 2.',
+ fb_fail:'✗ Incorrect. Modulo returns the remainder of the division.'},
+
+{id:13,title:'Strings — read full line',type:'mc',diff:'med',
+ q:'Which function should be used to read a full line of text including spaces from <code>cin</code>?',
+ opts:['cin.read()','cin >>','getline(cin, string_name)','cin.get()'],correct:2,
+ fb_ok:'✓ Correct. getline() extracts characters until the newline.',
+ fb_fail:'✗ Incorrect. cin >> stops at the first whitespace.'},
+
+{id:14,title:'Strings — length count',type:'predict',diff:'med',
+ code:`<span class="kw">string</span> <span class="var">msg</span> <span class="op">=</span> <span class="str">"Data Comm"</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">msg</span><span class="punct">.</span><span class="var">length</span><span class="punct">();</span>`,
+ q:'Predict the output of the string length function.',
+ inputs:[{id:'p14a',sym:'$',ph:'number...'}],
+ answers:['9'],
+ fb_ok:'✓ Correct. The space is counted as a character.',
+ fb_fail:'✗ Incorrect. Count every character, including the space.'},
+
+{id:15,title:'Strings — bounds traversal',type:'bug',diff:'hard',
+ q:'Find the logic error regarding string traversal.',
+ buglines:[
+   {ln:1,code:`<span class="kw">string</span> <span class="var">txt</span> <span class="op">=</span> <span class="str">"Admin"</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span> <span class="var">i</span> <span class="op">&lt;=</span> <span class="var">txt</span><span class="punct">.</span><span class="var">length</span><span class="punct">();</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span>`},
+   {ln:3,code:`    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">txt</span><span class="punct">[</span><span class="var">i</span><span class="punct">];</span>`},
+   {ln:4,code:`<span class="punct">}</span>`}
+ ],correctLine:2,
+ fb_ok:'✓ Correct. The loop uses `<=`, causing an out-of-bounds access at the null terminator.',
+ fb_fail:'✗ Incorrect. Check the loop condition bounds compared to the string length.'},
+
+{id:16,title:'Operators — post-increment',type:'predict',diff:'med',
+ code:`<span class="kw">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">5</span><span class="punct">;</span>\n<span class="kw">int</span> <span class="var">b</span> <span class="op">=</span> <span class="var">a</span><span class="op">++</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">b</span><span class="punct">;</span>`,
+ q:'Predict the output of the post-increment operator.',
+ inputs:[{id:'p16a',sym:'$',ph:'number...'}],
+ answers:['5'],
+ fb_ok:'✓ Correct. The value is assigned to b before a is incremented.',
+ fb_fail:'✗ Incorrect. This is a post-increment, so b gets the original value.'},
+
+{id:17,title:'Operators — compound assignment',type:'mc',diff:'easy',
+ q:'What is <code>x += 5</code> equivalent to?',
+ opts:['x = x + 5','x = 5 + 5','x = x - 5','x++'],correct:0,
+ fb_ok:'✓ Correct. It is a compound assignment for x = x + 5.',
+ fb_fail:'✗ Incorrect. It adds 5 to the current value of x.'},
+
+{id:18,title:'Operators — logical AND',type:'fill',diff:'easy',
+ code:`<span class="kw">if</span> <span class="punct">(</span><span class="var">x</span> <span class="op">&gt;</span> <span class="num">5</span> <span class="kw">____</span> <span class="var">x</span> <span class="op">&lt;</span> <span class="num">10</span><span class="punct">)</span>`,
+ q:'Provide the logical AND operator.',
+ ph:'operator',answers:['&&'],
+ fb_ok:'✓ Correct. && is the logical AND operator.',
+ fb_fail:'✗ Incorrect. Use the symbols for logical AND.'},
+
+{id:19,title:'Loops — missing increment',type:'bug',diff:'hard',
+ q:'Identify the line causing an infinite loop.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">while</span><span class="punct">(</span><span class="var">i</span> <span class="op">&lt;</span> <span class="num">10</span><span class="punct">) {</span>`},
+   {ln:3,code:`    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">i</span><span class="punct">;</span>`},
+   {ln:4,code:`    <span class="cmt">// executing process</span>`},
+   {ln:5,code:`<span class="punct">}</span>`}
+ ],correctLine:2,
+ fb_ok:'✓ Correct. Without an increment inside the block, the condition i < 10 remains true forever.',
+ fb_fail:'✗ Incorrect. Look at what happens to the condition variable over time.'},
+
+{id:20,title:'Loops — do-while guarantee',type:'mc',diff:'med',
+ q:'What guarantees that a <code>do-while</code> loop executes at least once?',
+ opts:['The compiler optimizes it.','The condition is evaluated at the end of the loop.','The condition is true by default.','It uses a special counter.'],correct:1,
+ fb_ok:'✓ Correct. The condition is checked after the first execution.',
+ fb_fail:'✗ Incorrect. The evaluation happens at the bottom of the loop body.'},
+
+ {id:21,title:'Variables — single character',type:'mc',diff:'med',
+ q:'Which data type is specifically designed to store a single character?',
+ opts:['string','char','varchar','text'],correct:1,
+ fb_ok:'✓ Correct. The char data type holds exactly one character.',
+ fb_fail:'✗ Incorrect. Use char for single characters, enclosed in single quotes.'},
+
+{id:22,title:'I/O — extraction operator',type:'fill',diff:'med',
+ code:`<span class="var">cin</span> <span class="op">____</span> <span class="var">myVar</span><span class="punct">;</span>`,
+ q:'Provide the extraction operator used with <code>cin</code> to read keyboard input.',
+ ph:'operator',answers:['>>'],
+ fb_ok:'✓ Correct. The >> operator extracts input from the standard stream.',
+ fb_fail:'✗ Incorrect. cin uses the >> extraction operator.'},
+
+{id:23,title:'I/O — consecutive output',type:'predict',diff:'med',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">5</span><span class="punct">,</span> <span class="var">y</span> <span class="op">=</span> <span class="num">2</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span> <span class="op">&lt;&lt;</span> <span class="var">y</span><span class="punct">;</span>`,
+ q:'Predict the exact output of these consecutive variables.',
+ inputs:[{id:'p23a',sym:'$',ph:'exact output...'}],
+ answers:['52'],
+ fb_ok:'✓ Correct. Without a space or newline between them, they print adjacent to each other.',
+ fb_fail:'✗ Incorrect. Notice there is no space added between x and y in the output.'},
+
+{id:24,title:'I/O — cin operator bug',type:'bug',diff:'med',
+ q:'Identify the line causing a compilation error with standard input.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">num</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="var">cin</span> <span class="op">&lt;&lt;</span> <span class="var">num</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">num</span><span class="punct">;</span>`}
+ ],correctLine:2,
+ fb_ok:'✓ Correct. cin requires the >> extraction operator, not the << insertion operator.',
+ fb_fail:'✗ Incorrect. Check the direction of the operator used with cin.'},
+
+{id:25,title:'Conditionals — switch unmatched',type:'mc',diff:'med',
+ q:'Which keyword handles all unmatched cases in a <code>switch</code> statement?',
+ opts:['else','other','default','finally'],correct:2,
+ fb_ok:'✓ Correct. The default case executes if no other case matches.',
+ fb_fail:'✗ Incorrect. The keyword is default.'},
+
+{id:26,title:'Conditionals — basic block',type:'fill',diff:'med',
+ code:`<span class="kw">____</span> <span class="punct">(</span><span class="var">x</span> <span class="op">==</span> <span class="num">10</span><span class="punct">) {</span>\n    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Ten"</span><span class="punct">;</span>\n<span class="punct">}</span>`,
+ q:'Fill in the keyword to begin a basic conditional block.',
+ ph:'keyword',answers:['if'],
+ fb_ok:'✓ Correct. The if statement checks the condition.',
+ fb_fail:'✗ Incorrect. Use if.'},
+
+{id:27,title:'Conditionals — logical negation',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>\n<span class="kw">if</span><span class="punct">(</span><span class="op">!</span><span class="var">x</span><span class="punct">)</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Zero"</span><span class="punct">;</span>\n<span class="kw">else</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"One"</span><span class="punct">;</span>`,
+ q:'Predict the output of this logical negation.',
+ inputs:[{id:'p27a',sym:'$',ph:'exact output...'}],
+ answers:['Zero'],
+ fb_ok:'✓ Correct. Since x is 0 (false), !x becomes true, printing "Zero".',
+ fb_fail:'✗ Incorrect. The ! operator negates the boolean value of x.'},
+
+{id:28,title:'Conditionals — misplaced else',type:'bug',diff:'hard',
+ q:'Find the line causing a "misplaced else" syntax error.',
+ buglines:[
+   {ln:1,code:`<span class="kw">if</span><span class="punct">(</span><span class="var">x</span> <span class="op">&gt;</span> <span class="num">5</span><span class="punct">)</span>`},
+   {ln:2,code:`    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Yes"</span><span class="punct">;</span>`},
+   {ln:3,code:`    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Always"</span><span class="punct">;</span>`},
+   {ln:4,code:`<span class="kw">else</span>`},
+   {ln:5,code:`    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"No"</span><span class="punct">;</span>`}
+ ],correctLine:4,
+ fb_ok:'✓ Correct. Because there are no curly braces {}, the if ends after line 2, leaving the else disconnected.',
+ fb_fail:'✗ Incorrect. Look at how the lack of curly braces affects the connection between if and else.'},
+
+{id:29,title:'Math — round down',type:'mc',diff:'med',
+ q:'Which math function rounds a floating-point number downwards to the nearest integer?',
+ opts:['ceil()','round()','floor()','trunc()'],correct:2,
+ fb_ok:'✓ Correct. floor() always rounds down.',
+ fb_fail:'✗ Incorrect. The floor() function rounds downwards.'},
+
+{id:30,title:'Math — square root',type:'fill',diff:'med',
+ code:`<span class="kw">double</span> <span class="var">val</span> <span class="op">=</span> <span class="kw">____</span><span class="punct">(</span><span class="num">25.0</span><span class="punct">);</span>`,
+ q:'Fill in the function to calculate a square root.',
+ ph:'function',answers:['sqrt'],
+ fb_ok:'✓ Correct. sqrt() calculates the square root.',
+ fb_fail:'✗ Incorrect. The function is sqrt.'},
+
+{id:31,title:'Math — power calculation',type:'predict',diff:'med',
+ code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">pow</span><span class="punct">(</span><span class="num">2</span><span class="punct">,</span> <span class="num">3</span><span class="punct">);</span>`,
+ q:'Predict the mathematical output.',
+ inputs:[{id:'p31a',sym:'$',ph:'number...'}],
+ answers:['8'],
+ fb_ok:'✓ Correct. 2 to the power of 3 is 8.',
+ fb_fail:'✗ Incorrect. This calculates 2 raised to the 3rd power.'},
+
+{id:32,title:'Math — invalid modulo',type:'bug',diff:'hard',
+ q:'Identify the line causing a type error with a mathematical operator.',
+ buglines:[
+   {ln:1,code:`<span class="kw">float</span> <span class="var">val</span> <span class="op">=</span> <span class="num">5.5</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">int</span> <span class="var">res</span> <span class="op">=</span> <span class="var">val</span> <span class="op">%</span> <span class="num">2</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">res</span><span class="punct">;</span>`}
+ ],correctLine:2,
+ fb_ok:'✓ Correct. The modulo operator % cannot be directly used with floating-point numbers in C++.',
+ fb_fail:'✗ Incorrect. Look at the data types required for the modulo operator.'},
+
+{id:33,title:'Strings — get size',type:'mc',diff:'med',
+ q:'What is the correct syntax to get the number of characters in a string object named <code>s</code>?',
+ opts:['s.length','length(s)','s.size()','s.count()'],correct:2,
+ fb_ok:'✓ Correct. s.size() or s.length() are the standard methods.',
+ fb_fail:'✗ Incorrect. You must call it as a function: s.size() or s.length().'},
+
+{id:34,title:'Strings — header file',type:'fill',diff:'med',
+ code:`<span class="kw">#include</span> <span class="op">&lt;</span><span class="var">____</span><span class="op">&gt;</span>`,
+ q:'Include the necessary header to use C++ string objects.',
+ ph:'header',answers:['string'],
+ fb_ok:'✓ Correct. The <string> header is required.',
+ fb_fail:'✗ Incorrect. Include the string header.'},
+
+{id:35,title:'Strings — character access',type:'predict',diff:'med',
+ code:`<span class="kw">string</span> <span class="var">s</span> <span class="op">=</span> <span class="str">"KSU"</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">s</span><span class="punct">[</span><span class="num">1</span><span class="punct">];</span>`,
+ q:'Predict the output of the string index access.',
+ inputs:[{id:'p35a',sym:'$',ph:'character...'}],
+ answers:['S'],
+ fb_ok:'✓ Correct. Strings are zero-indexed, so index 1 is the second character.',
+ fb_fail:'✗ Incorrect. Remember that the first character is at index 0.'},
+
+{id:36,title:'Strings — invalid operation',type:'bug',diff:'hard',
+ q:'Find the line causing a compilation error with string operations.',
+ buglines:[
+   {ln:1,code:`<span class="kw">string</span> <span class="var">s</span> <span class="op">=</span> <span class="str">"Hello"</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">5</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="kw">string</span> <span class="var">res</span> <span class="op">=</span> <span class="var">s</span> <span class="op">-</span> <span class="var">x</span><span class="punct">;</span>`}
+ ],correctLine:3,
+ fb_ok:'✓ Correct. You cannot subtract an integer from a string.',
+ fb_fail:'✗ Incorrect. Review the arithmetic operation on line 3.'},
+
+{id:37,title:'Operators — logical OR',type:'mc',diff:'med',
+ q:'Which operator evaluates to true if either of its conditions are true?',
+ opts:['&&','||','!=','=='],correct:1,
+ fb_ok:'✓ Correct. || is the logical OR operator.',
+ fb_fail:'✗ Incorrect. The logical OR operator is ||.'},
+
+{id:38,title:'Operators — compound addition',type:'fill',diff:'med',
+ code:`<span class="var">x</span> <span class="op">____</span> <span class="num">5</span><span class="punct">;</span>`,
+ q:'Provide the compound assignment operator to add 5 to <code>x</code>.',
+ ph:'operator',answers:['+='],
+ fb_ok:'✓ Correct. += adds the right operand to the left operand.',
+ fb_fail:'✗ Incorrect. Use the += operator.'},
+
+{id:39,title:'Operators — multiply and assign',type:'predict',diff:'med',
+ code:`<span class="kw">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">10</span><span class="punct">;</span>\n<span class="var">a</span> <span class="op">*=</span> <span class="num">2</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span><span class="punct">;</span>`,
+ q:'Predict the final value of <code>a</code>.',
+ inputs:[{id:'p39a',sym:'$',ph:'number...'}],
+ answers:['20'],
+ fb_ok:'✓ Correct. a is multiplied by 2, becoming 20.',
+ fb_fail:'✗ Incorrect. *= multiplies the variable by the right side value.'},
+
+{id:40,title:'Operators — assignment vs equality',type:'bug',diff:'hard',
+ q:'Identify the logic error that causes the block to always execute.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">5</span><span class="punct">,</span> <span class="var">b</span> <span class="op">=</span> <span class="num">10</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">if</span><span class="punct">(</span><span class="var">a</span> <span class="op">=</span> <span class="var">b</span><span class="punct">) {</span>`},
+   {ln:3,code:`    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Equal"</span><span class="punct">;</span>`},
+   {ln:4,code:`<span class="punct">}</span>`}
+ ],correctLine:2,
+ fb_ok:'✓ Correct. a = b assigns 10 to a (which evaluates to true). It should be a == b.',
+ fb_fail:'✗ Incorrect. Look closely at the comparison operator inside the if statement.'},
+
+{id:41,title:'Loops — for loop use case',type:'mc',diff:'med',
+ q:'Which loop structure is generally best when you know exactly how many times you need to iterate?',
+ opts:['while loop','do-while loop','for loop','recursive loop'],correct:2,
+ fb_ok:'✓ Correct. The for loop neatly packages initialization, condition, and increment.',
+ fb_fail:'✗ Incorrect. A for loop is best for a known number of iterations.'},
+
+{id:42,title:'Loops — skip iteration',type:'fill',diff:'med',
+ code:`<span class="kw">____</span><span class="punct">;</span>`,
+ q:'What keyword immediately skips the rest of the current loop iteration and proceeds to the next?',
+ ph:'keyword',answers:['continue'],
+ fb_ok:'✓ Correct. continue jumps to the next iteration.',
+ fb_fail:'✗ Incorrect. The keyword is continue.'},
+
+{id:43,title:'Loops — string repeater',type:'predict',diff:'med',
+ code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">0</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;</span><span class="num">3</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span>\n    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"*"</span><span class="punct">;</span>\n<span class="punct">}</span>`,
+ q:'Predict the exact output of this loop.',
+ inputs:[{id:'p43a',sym:'$',ph:'exact output...'}],
+ answers:['***'],
+ fb_ok:'✓ Correct. The loop runs 3 times, printing an asterisk each time.',
+ fb_fail:'✗ Incorrect. Count how many times the loop condition evaluates to true.'},
+
+{id:44,title:'Loops — do-while syntax',type:'bug',diff:'med',
+ q:'Find the syntax error in this do-while loop.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">do</span> <span class="punct">{</span>`},
+   {ln:3,code:`    <span class="var">i</span><span class="op">++</span><span class="punct">;</span>`},
+   {ln:4,code:`<span class="punct">}</span> <span class="kw">while</span><span class="punct">(</span><span class="var">i</span> <span class="op">&lt;</span> <span class="num">5</span><span class="punct">)</span>`}
+ ],correctLine:4,
+ fb_ok:'✓ Correct. A do-while loop must end with a semicolon after the condition.',
+ fb_fail:'✗ Incorrect. Check the punctuation at the very end of the loop structure.'},
+
+{id:45,title:'Mixed — variable scope',type:'mc',diff:'hard',
+ code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">0</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;</span><span class="num">5</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span> <span class="cmt">/* ... */</span> <span class="punct">}</span>`,
+ q:'What is the scope of a variable declared within the initialization statement of a <code>for</code> loop?',
+ opts:['Global scope','Only within the loop body','Throughout the whole function','It has no scope'],correct:1,
+ fb_ok:'✓ Correct. The variable ceases to exist outside the loop.',
+ fb_fail:'✗ Incorrect. The variable is restricted strictly to the loop block.'},
+
+{id:46,title:'Mixed — post-loop value',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">1</span><span class="punct">;</span>\n<span class="kw">while</span><span class="punct">(</span><span class="var">x</span> <span class="op">&lt;</span> <span class="num">4</span><span class="punct">) {</span>\n    <span class="var">x</span><span class="op">++</span><span class="punct">;</span>\n<span class="punct">}</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span><span class="punct">;</span>`,
+ q:'Predict the final output.',
+ inputs:[{id:'p46a',sym:'$',ph:'number...'}],
+ answers:['4'],
+ fb_ok:'✓ Correct. The loop increments x until it becomes 4, which fails the condition, then it prints 4.',
+ fb_fail:'✗ Incorrect. Trace the value of x after the final iteration.'},
+
+{id:47,title:'Mixed — boolean keyword',type:'fill',diff:'med',
+ code:`<span class="kw">____</span> <span class="var">isReady</span> <span class="op">=</span> <span class="kw">true</span><span class="punct">;</span>`,
+ q:'Provide the exact C++ keyword for the boolean data type.',
+ ph:'keyword',answers:['bool'],
+ fb_ok:'✓ Correct. bool is the standard data type for true/false values.',
+ fb_fail:'✗ Incorrect. The keyword is bool.'},
+
+{id:48,title:'Mixed — loop terminator bug',type:'bug',diff:'hard',
+ q:'Find the bug causing the loop body to execute only once.',
+ buglines:[
+   {ln:1,code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">0</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;</span><span class="num">5</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">);</span>`},
+   {ln:2,code:`<span class="punct">{</span>`},
+   {ln:3,code:`    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Looping"</span><span class="punct">;</span>`},
+   {ln:4,code:`<span class="punct">}</span>`}
+ ],correctLine:1,
+ fb_ok:'✓ Correct. The semicolon at the end of line 1 prematurely terminates the loop.',
+ fb_fail:'✗ Incorrect. Look at the end of the for statement definition.'},
+
+{id:49,title:'Mixed — int division',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">7</span><span class="punct">,</span> <span class="var">b</span> <span class="op">=</span> <span class="num">2</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">/</span> <span class="var">b</span><span class="punct">;</span>`,
+ q:'Predict the result of this integer arithmetic.',
+ inputs:[{id:'p49a',sym:'$',ph:'number...'}],
+ answers:['3'],
+ fb_ok:'✓ Correct. Integer division discards the remainder, so 7 / 2 evaluates to 3.',
+ fb_fail:'✗ Incorrect. Remember that integer division does not keep decimals.'},
+
+{id:50,title:'Mixed — main return code',type:'mc',diff:'med',
+ q:'What is the purpose of the <code>return 0;</code> statement at the end of <code>main()</code>?',
+ opts:['It prints 0 to the console.','It restarts the program.','It signals to the OS that the program executed successfully.','It deletes all variables.'],correct:2,
+ fb_ok:'✓ Correct. A return value of 0 indicates successful execution.',
+ fb_fail:'✗ Incorrect. It is a status code returned to the operating system.'}
+ ,
+{id:51,title:'Loops — nested output',type:'predict',diff:'hard',
+ code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">1</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;=</span><span class="num">3</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span>\n  <span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">j</span><span class="op">=</span><span class="num">1</span><span class="punct">;</span> <span class="var">j</span><span class="op">&lt;=</span><span class="num">2</span><span class="punct">;</span> <span class="var">j</span><span class="op">++</span><span class="punct">)</span>\n    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">i</span> <span class="op">*</span> <span class="var">j</span> <span class="op">&lt;&lt;</span> <span class="str">" "</span><span class="punct">;</span>\n<span class="punct">}</span>`,
+ q:'Predict the exact output of this nested loop.',
+ inputs:[{id:'p51a',sym:'$',ph:'exact output...'}],
+ answers:['1 2 2 4 3 6 '],
+ fb_ok:'✓ Correct. For each i, j runs 1 and 2, multiplying to give 1 2 | 2 4 | 3 6 with spaces.',
+ fb_fail:'✗ Incorrect. Trace i×j for every combination of i (1,2,3) and j (1,2).'},
+
+{id:52,title:'Loops — break effect',type:'mc',diff:'hard',
+ code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">0</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;</span><span class="num">10</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span>\n  <span class="kw">if</span><span class="punct">(</span><span class="var">i</span> <span class="op">==</span> <span class="num">4</span><span class="punct">)</span> <span class="kw">break</span><span class="punct">;</span>\n<span class="punct">}</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">i</span><span class="punct">;</span>`,
+ q:'What happens when this code is compiled and run?',
+ opts:['Prints 4','Prints 5','Prints 10','Compile error — i is out of scope'],correct:3,
+ fb_ok:'✓ Correct. The variable i is declared inside the for statement, so it is out of scope after the loop ends.',
+ fb_fail:'✗ Incorrect. Consider the scope of the variable i declared in the for initializer.'},
+
+{id:53,title:'Loops — continue skip',type:'predict',diff:'hard',
+ code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">1</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;=</span><span class="num">5</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span>\n  <span class="kw">if</span><span class="punct">(</span><span class="var">i</span> <span class="op">%</span> <span class="num">2</span> <span class="op">==</span> <span class="num">0</span><span class="punct">)</span> <span class="kw">continue</span><span class="punct">;</span>\n  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">i</span><span class="punct">;</span>\n<span class="punct">}</span>`,
+ q:'Predict the exact output of this loop.',
+ inputs:[{id:'p53a',sym:'$',ph:'exact output...'}],
+ answers:['135'],
+ fb_ok:'✓ Correct. Even numbers are skipped by continue, so only 1, 3, and 5 are printed.',
+ fb_fail:'✗ Incorrect. continue skips the rest of the body for that iteration when the condition is true.'},
+
+{id:54,title:'Loops — while condition',type:'fill',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">n</span> <span class="op">=</span> <span class="num">10</span><span class="punct">;</span>\n<span class="kw">while</span><span class="punct">(</span><span class="var">n</span> <span class="op">____</span> <span class="num">0</span><span class="punct">) {</span>\n  <span class="var">n</span> <span class="op">-=</span> <span class="num">3</span><span class="punct">;</span>\n<span class="punct">}</span>`,
+ q:'What comparison operator makes this loop count down correctly until n is no longer positive?',
+ ph:'operator',answers:['>'],
+ fb_ok:'✓ Correct. The loop should continue while n is greater than 0.',
+ fb_fail:'✗ Incorrect. Use > to keep looping while n is still above zero.'},
+
+{id:55,title:'Loops — wrong decrement bug',type:'bug',diff:'hard',
+ q:'Find the line that causes this countdown loop to count in the wrong direction.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">5</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">while</span><span class="punct">(</span><span class="var">i</span> <span class="op">&gt;</span> <span class="num">0</span><span class="punct">) {</span>`},
+   {ln:3,code:`  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">i</span><span class="punct">;</span>`},
+   {ln:4,code:`  <span class="var">i</span><span class="op">++</span><span class="punct">;</span>`},
+   {ln:5,code:`<span class="punct">}</span>`}
+ ],correctLine:4,
+ fb_ok:'✓ Correct. i++ increments instead of decrements, so the condition i > 0 stays true forever.',
+ fb_fail:'✗ Incorrect. Check whether the update step moves i toward or away from the stopping condition.'},
+
+{id:56,title:'Loops — do-while runs once',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">10</span><span class="punct">;</span>\n<span class="kw">do</span> <span class="punct">{</span>\n  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span><span class="punct">;</span>\n  <span class="var">x</span><span class="op">++</span><span class="punct">;</span>\n<span class="punct">}</span> <span class="kw">while</span><span class="punct">(</span><span class="var">x</span> <span class="op">&lt;</span> <span class="num">10</span><span class="punct">);</span>`,
+ q:'Predict the exact output.',
+ inputs:[{id:'p56a',sym:'$',ph:'number...'}],
+ answers:['10'],
+ fb_ok:'✓ Correct. The body runs once printing 10, then x becomes 11 which fails the condition immediately.',
+ fb_fail:'✗ Incorrect. A do-while executes the body first, then checks the condition.'},
+
+{id:57,title:'Loops — nested break scope',type:'mc',diff:'xhard',
+ code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">0</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;</span><span class="num">3</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span>\n  <span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">j</span><span class="op">=</span><span class="num">0</span><span class="punct">;</span> <span class="var">j</span><span class="op">&lt;</span><span class="num">3</span><span class="punct">;</span> <span class="var">j</span><span class="op">++</span><span class="punct">) {</span>\n    <span class="kw">if</span><span class="punct">(</span><span class="var">j</span> <span class="op">==</span> <span class="num">1</span><span class="punct">)</span> <span class="kw">break</span><span class="punct">;</span>\n    <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">i</span> <span class="op">&lt;&lt;</span> <span class="var">j</span><span class="punct">;</span>\n  <span class="punct">}</span>\n<span class="punct">}</span>`,
+ q:'What is the exact output of this nested loop with a break?',
+ opts:['000102','001122','00 10 20','001121'],correct:2,
+ fb_ok:'✓ Correct. The inner break only exits the inner loop when j==1, so each i prints only when j==0: "00", "10", "20".',
+ fb_fail:'✗ Incorrect. break only exits the innermost loop it is in. Trace each iteration of i with j starting from 0.'},
+
+{id:58,title:'Loops — for loop accumulator',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">sum</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>\n<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">1</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;=</span><span class="num">4</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">)</span>\n  <span class="var">sum</span> <span class="op">+=</span> <span class="var">i</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">sum</span><span class="punct">;</span>`,
+ q:'Predict the final value of sum.',
+ inputs:[{id:'p58a',sym:'$',ph:'number...'}],
+ answers:['10'],
+ fb_ok:'✓ Correct. 1+2+3+4 = 10.',
+ fb_fail:'✗ Incorrect. Accumulate the sum for each iteration from 1 to 4.'},
+
+{id:59,title:'Loops — loop count mismatch',type:'bug',diff:'hard',
+ q:'Find the line responsible for the loop printing one extra iteration.',
+ buglines:[
+   {ln:1,code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">1</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;=</span><span class="num">5</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span>`},
+   {ln:2,code:`  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Item "</span> <span class="op">&lt;&lt;</span> <span class="var">i</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="punct">}</span>`}
+ ],correctLine:1,
+ fb_ok:'✓ Correct. The condition i <= 5 should be i < 5 if you want exactly 4 iterations (1 through 4).',
+ fb_fail:'✗ Incorrect. Look at the loop condition — is it < or <=, and what values does that include?'},
+
+{id:60,title:'Loops — while vs do-while',type:'mc',diff:'hard',
+ q:'A <code>while</code> loop and a <code>do-while</code> loop are given the same false condition from the start. What is different about their behavior?',
+ opts:['Both skip the body entirely.','The while loop runs once; do-while skips.','The do-while loop runs once; while loop skips.','Both run exactly once.'],correct:2,
+ fb_ok:'✓ Correct. A do-while always executes the body before evaluating the condition.',
+ fb_fail:'✗ Incorrect. The key difference is when the condition is evaluated — before or after the body.'},
+
+{id:61,title:'Conditionals — chained else-if',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">15</span><span class="punct">;</span>\n<span class="kw">if</span><span class="punct">(</span><span class="var">x</span> <span class="op">&gt;</span> <span class="num">20</span><span class="punct">)</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"A"</span><span class="punct">;</span>\n<span class="kw">else if</span><span class="punct">(</span><span class="var">x</span> <span class="op">&gt;</span> <span class="num">10</span><span class="punct">)</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"B"</span><span class="punct">;</span>\n<span class="kw">else if</span><span class="punct">(</span><span class="var">x</span> <span class="op">&gt;</span> <span class="num">5</span><span class="punct">)</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"C"</span><span class="punct">;</span>\n<span class="kw">else</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"D"</span><span class="punct">;</span>`,
+ q:'Predict the output.',
+ inputs:[{id:'p61a',sym:'$',ph:'letter...'}],
+ answers:['B'],
+ fb_ok:'✓ Correct. 15 is not > 20, but it is > 10, so "B" is printed and the chain stops.',
+ fb_fail:'✗ Incorrect. Evaluate each condition top to bottom and stop at the first one that is true.'},
+
+{id:62,title:'Conditionals — nested ternary',type:'mc',diff:'xhard',
+ code:`<span class="kw">int</span> <span class="var">n</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>\n<span class="kw">string</span> <span class="var">r</span> <span class="op">=</span> <span class="punct">(</span><span class="var">n</span> <span class="op">&gt;</span> <span class="num">0</span><span class="punct">)</span> <span class="op">?</span> <span class="str">"Pos"</span> <span class="op">:</span> <span class="punct">(</span><span class="var">n</span> <span class="op">&lt;</span> <span class="num">0</span><span class="punct">)</span> <span class="op">?</span> <span class="str">"Neg"</span> <span class="op">:</span> <span class="str">"Zero"</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">r</span><span class="punct">;</span>`,
+ q:'What is the output of this nested ternary?',
+ opts:['Pos','Neg','Zero','Compile Error'],correct:2,
+ fb_ok:'✓ Correct. n is 0, so neither the first nor second condition is true, and "Zero" is printed.',
+ fb_fail:'✗ Incorrect. Evaluate both ternary conditions: n > 0 is false, n < 0 is also false, so the final else applies.'},
+
+{id:63,title:'Conditionals — switch fall-through',type:'predict',diff:'xhard',
+ code:`<span class="kw">int</span> <span class="var">n</span> <span class="op">=</span> <span class="num">2</span><span class="punct">;</span>\n<span class="kw">switch</span><span class="punct">(</span><span class="var">n</span><span class="punct">) {</span>\n  <span class="kw">case</span> <span class="num">1</span><span class="punct">:</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"One"</span><span class="punct">;</span>\n  <span class="kw">case</span> <span class="num">2</span><span class="punct">:</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Two"</span><span class="punct">;</span>\n  <span class="kw">case</span> <span class="num">3</span><span class="punct">:</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Three"</span><span class="punct">;</span>\n  <span class="kw">default</span><span class="punct">:</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Done"</span><span class="punct">;</span>\n<span class="punct">}</span>`,
+ q:'Predict the exact output (all cases have no break).',
+ inputs:[{id:'p63a',sym:'$',ph:'exact output...'}],
+ answers:['TwoThreeDone'],
+ fb_ok:'✓ Correct. Without break, execution falls through from case 2 all the way to default.',
+ fb_fail:'✗ Incorrect. Without break statements, every case after the matching one also executes — this is fall-through.'},
+
+{id:64,title:'Conditionals — switch missing break',type:'bug',diff:'hard',
+ q:'Identify the line where a missing break causes unintended fall-through into case 2.',
+ buglines:[
+   {ln:1,code:`<span class="kw">switch</span><span class="punct">(</span><span class="var">x</span><span class="punct">) {</span>`},
+   {ln:2,code:`  <span class="kw">case</span> <span class="num">1</span><span class="punct">:</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"One"</span><span class="punct">;</span>`},
+   {ln:3,code:`  <span class="kw">case</span> <span class="num">2</span><span class="punct">:</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Two"</span><span class="punct">;</span> <span class="kw">break</span><span class="punct">;</span>`},
+   {ln:4,code:`<span class="punct">}</span>`}
+ ],correctLine:2,
+ fb_ok:'✓ Correct. Case 1 has no break, so execution falls through into case 2.',
+ fb_fail:'✗ Incorrect. Look at which case is missing a break statement at its end.'},
+
+{id:65,title:'Conditionals — short-circuit AND',type:'mc',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>\n<span class="kw">if</span><span class="punct">(</span><span class="var">x</span> <span class="op">!=</span> <span class="num">0</span> <span class="op">&amp;&amp;</span> <span class="num">10</span><span class="op">/</span><span class="var">x</span> <span class="op">&gt;</span> <span class="num">1</span><span class="punct">)</span>\n  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Safe"</span><span class="punct">;</span>\n<span class="kw">else</span>\n  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Guard"</span><span class="punct">;</span>`,
+ q:'What is the output and why does no division-by-zero error occur?',
+ opts:['Safe — x is not zero','Guard — short-circuit prevents 10/0 evaluation','Compile Error','Runtime crash on division by zero'],correct:1,
+ fb_ok:'✓ Correct. Because x != 0 is false, the && short-circuits and 10/x is never evaluated.',
+ fb_fail:'✗ Incorrect. The && operator short-circuits: if the left side is false, the right side is not evaluated.'},
+
+{id:66,title:'Variables — overflow',type:'mc',diff:'xhard',
+ q:'An <code>int</code> variable holds its maximum value. What typically happens when you add 1 to it in C++?',
+ opts:['It becomes 0','It triggers a runtime exception','It wraps around to the most negative int value','The program refuses to compile'],correct:2,
+ fb_ok:'✓ Correct. Signed integer overflow causes undefined behavior, but most implementations wrap around to INT_MIN.',
+ fb_fail:'✗ Incorrect. Signed integer overflow typically wraps around — the bit pattern rolls from max to the most negative value.'},
+
+{id:67,title:'Variables — char arithmetic',type:'predict',diff:'hard',
+ code:`<span class="kw">char</span> <span class="var">c</span> <span class="op">=</span> <span class="str">'A'</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="punct">(</span><span class="kw">int</span><span class="punct">)</span><span class="var">c</span><span class="punct">;</span>`,
+ q:'Predict the output of casting the character to int.',
+ inputs:[{id:'p67a',sym:'$',ph:'number...'}],
+ answers:['65'],
+ fb_ok:'✓ Correct. The ASCII value of \'A\' is 65.',
+ fb_fail:'✗ Incorrect. Casting a char to int reveals its ASCII decimal value. \'A\' is 65 in ASCII.'},
+
+{id:68,title:'Variables — type mismatch bug',type:'bug',diff:'hard',
+ q:'Find the line that causes a loss of data due to an implicit narrowing conversion.',
+ buglines:[
+   {ln:1,code:`<span class="kw">double</span> <span class="var">pi</span> <span class="op">=</span> <span class="num">3.14159</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">int</span> <span class="var">approx</span> <span class="op">=</span> <span class="var">pi</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">approx</span><span class="punct">;</span>`}
+ ],correctLine:2,
+ fb_ok:'✓ Correct. Assigning a double to an int silently truncates the decimal part, losing data.',
+ fb_fail:'✗ Incorrect. Look at what happens when a floating-point value is stored into an integer variable.'},
+
+{id:69,title:'Variables — const keyword',type:'fill',diff:'hard',
+ code:`<span class="kw">____</span> <span class="kw">int</span> <span class="var">MAX</span> <span class="op">=</span> <span class="num">100</span><span class="punct">;</span>`,
+ q:'What keyword makes this variable a read-only constant that cannot be changed after declaration?',
+ ph:'keyword',answers:['const'],
+ fb_ok:'✓ Correct. const prevents the variable from being reassigned.',
+ fb_fail:'✗ Incorrect. The keyword is const — it stands for constant.'},
+
+{id:70,title:'Variables — local scope shadow',type:'mc',diff:'xhard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">5</span><span class="punct">;</span>\n<span class="punct">{</span>\n  <span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">20</span><span class="punct">;</span>\n  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span><span class="punct">;</span>\n<span class="punct">}</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span><span class="punct">;</span>`,
+ q:'What is the complete output of this variable shadowing code?',
+ opts:['55','205','2020','520'],correct:1,
+ fb_ok:'✓ Correct. Inside the block, the inner x=20 shadows the outer x=5. Outside, the original x=5 is restored.',
+ fb_fail:'✗ Incorrect. The inner block creates its own x that shadows the outer one — this is variable shadowing.'},
+
+{id:71,title:'Math — abs function',type:'fill',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">n</span> <span class="op">=</span> <span class="num">-42</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="kw">____</span><span class="punct">(</span><span class="var">n</span><span class="punct">);</span>`,
+ q:'Fill in the function to return the absolute (non-negative) value of n.',
+ ph:'function',answers:['abs'],
+ fb_ok:'✓ Correct. abs() from <cmath> or <cstdlib> returns the absolute value.',
+ fb_fail:'✗ Incorrect. The standard function is abs().'},
+
+{id:72,title:'Math — ceil function',type:'predict',diff:'hard',
+ code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">ceil</span><span class="punct">(</span><span class="num">4.1</span><span class="punct">);</span>`,
+ q:'Predict the output of the ceiling function.',
+ inputs:[{id:'p72a',sym:'$',ph:'number...'}],
+ answers:['5'],
+ fb_ok:'✓ Correct. ceil() always rounds up to the next whole number.',
+ fb_fail:'✗ Incorrect. ceil() rounds upward — 4.1 goes up to 5.'},
+
+{id:73,title:'Math — fmod function',type:'mc',diff:'hard',
+ q:'Which function from <code>&lt;cmath&gt;</code> calculates the remainder of floating-point division?',
+ opts:['mod()','remainder()','fmod()','fract()'],correct:2,
+ fb_ok:'✓ Correct. fmod(x, y) computes the floating-point remainder of x/y.',
+ fb_fail:'✗ Incorrect. The function is fmod() — the floating-point equivalent of the % operator.'},
+
+{id:74,title:'Math — expression evaluation',type:'predict',diff:'hard',
+ code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="num">10</span> <span class="op">+</span> <span class="num">3</span> <span class="op">*</span> <span class="num">2</span> <span class="op">-</span> <span class="num">1</span><span class="punct">;</span>`,
+ q:'Predict the output applying correct C++ operator precedence.',
+ inputs:[{id:'p74a',sym:'$',ph:'number...'}],
+ answers:['15'],
+ fb_ok:'✓ Correct. Multiplication first: 3*2=6, then left to right: 10+6-1=15.',
+ fb_fail:'✗ Incorrect. Apply operator precedence: * before + and -.'},
+
+{id:75,title:'Math — wrong header bug',type:'bug',diff:'hard',
+ q:'Identify the line that causes a compile error when using math functions.',
+ buglines:[
+   {ln:1,code:`<span class="kw">#include</span> <span class="op">&lt;</span><span class="var">iostream</span><span class="op">&gt;</span>`},
+   {ln:2,code:`<span class="kw">using namespace</span> <span class="var">std</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="kw">int</span> <span class="fn">main</span><span class="punct">() {</span>`},
+   {ln:4,code:`  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="fn">sqrt</span><span class="punct">(</span><span class="num">16</span><span class="punct">);</span>`},
+   {ln:5,code:`<span class="punct">}</span>`}
+ ],correctLine:4,
+ fb_ok:'✓ Correct. sqrt() requires the <cmath> header which is missing, so line 4 fails to compile.',
+ fb_fail:'✗ Incorrect. The problem is that the function call on line 4 needs a header that has not been included.'},
+
+{id:76,title:'Strings — find method',type:'predict',diff:'hard',
+ code:`<span class="kw">string</span> <span class="var">s</span> <span class="op">=</span> <span class="str">"Network"</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">s</span><span class="punct">.</span><span class="fn">find</span><span class="punct">(</span><span class="str">"w"</span><span class="punct">);</span>`,
+ q:'Predict the index returned by find().',
+ inputs:[{id:'p76a',sym:'$',ph:'number...'}],
+ answers:['3'],
+ fb_ok:'✓ Correct. Strings are 0-indexed: N=0, e=1, t=2, w=3.',
+ fb_fail:'✗ Incorrect. Count from 0: N(0), e(1), t(2), w(3).'},
+
+{id:77,title:'Strings — substr method',type:'fill',diff:'hard',
+ code:`<span class="kw">string</span> <span class="var">s</span> <span class="op">=</span> <span class="str">"Programming"</span><span class="punct">;</span>\n<span class="kw">string</span> <span class="var">sub</span> <span class="op">=</span> <span class="var">s</span><span class="punct">.</span><span class="kw">____</span><span class="punct">(</span><span class="num">0</span><span class="punct">,</span> <span class="num">4</span><span class="punct">);</span>`,
+ q:'Fill in the string method to extract a portion of the string starting at index 0 with length 4.',
+ ph:'method',answers:['substr'],
+ fb_ok:'✓ Correct. substr(pos, length) extracts a substring.',
+ fb_fail:'✗ Incorrect. The method is substr(startPos, length).'},
+
+{id:78,title:'Strings — concatenation',type:'predict',diff:'hard',
+ code:`<span class="kw">string</span> <span class="var">a</span> <span class="op">=</span> <span class="str">"KSU"</span><span class="punct">,</span> <span class="var">b</span> <span class="op">=</span> <span class="str">"CEIT"</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">+</span> <span class="str">" "</span> <span class="op">+</span> <span class="var">b</span><span class="punct">;</span>`,
+ q:'Predict the exact output of string concatenation.',
+ inputs:[{id:'p78a',sym:'$',ph:'exact output...'}],
+ answers:['KSU CEIT'],
+ fb_ok:'✓ Correct. The + operator joins the strings with a space in between.',
+ fb_fail:'✗ Incorrect. The + operator concatenates strings, producing "KSU CEIT".'},
+
+{id:79,title:'Strings — replace number bug',type:'bug',diff:'hard',
+ q:'Find the line with an invalid operation on a string object.',
+ buglines:[
+   {ln:1,code:`<span class="kw">string</span> <span class="var">code</span> <span class="op">=</span> <span class="str">"CC122"</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="var">code</span><span class="punct">.</span><span class="fn">push_back</span><span class="punct">(</span><span class="str">'!'</span><span class="punct">);</span>`},
+   {ln:3,code:`<span class="var">code</span> <span class="op">=</span> <span class="var">code</span> <span class="op">*</span> <span class="num">2</span><span class="punct">;</span>`}
+ ],correctLine:3,
+ fb_ok:'✓ Correct. The * operator is not defined for std::string — you cannot multiply a string by an integer.',
+ fb_fail:'✗ Incorrect. Check which operation is not supported for std::string objects.'},
+
+{id:80,title:'Strings — toupper usage',type:'mc',diff:'hard',
+ code:`<span class="kw">string</span> <span class="var">s</span> <span class="op">=</span> <span class="str">"hello"</span><span class="punct">;</span>\n<span class="var">s</span><span class="punct">[</span><span class="num">0</span><span class="punct">]</span> <span class="op">=</span> <span class="fn">toupper</span><span class="punct">(</span><span class="var">s</span><span class="punct">[</span><span class="num">0</span><span class="punct">]);</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">s</span><span class="punct">;</span>`,
+ q:'What is the output of this code?',
+ opts:['HELLO','Hello','hello','H'],correct:1,
+ fb_ok:'✓ Correct. Only s[0] is changed to uppercase, resulting in "Hello".',
+ fb_fail:'✗ Incorrect. toupper only affects the character at index 0 — the rest of the string stays lowercase.'},
+
+{id:81,title:'I/O — endl vs newline',type:'mc',diff:'hard',
+ q:'What is the key difference between <code>endl</code> and <code>"\\n"</code> in C++?',
+ opts:['They are identical in all situations.','endl outputs two newlines.','endl flushes the output buffer; "\\n" does not.','\\n moves to the next line but endl does not.'],correct:2,
+ fb_ok:'✓ Correct. endl outputs a newline AND flushes the output buffer, which can slow performance.',
+ fb_fail:'✗ Incorrect. Both produce a newline, but endl also flushes the stream.'},
+
+{id:82,title:'I/O — multiple inputs',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">a</span><span class="punct">,</span> <span class="var">b</span><span class="punct">;</span>\n<span class="var">cin</span> <span class="op">&gt;&gt;</span> <span class="var">a</span> <span class="op">&gt;&gt;</span> <span class="var">b</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">+</span> <span class="var">b</span><span class="punct">;</span>`,
+ q:'If the user enters <code>3 7</code>, what is printed?',
+ inputs:[{id:'p82a',sym:'$',ph:'number...'}],
+ answers:['10'],
+ fb_ok:'✓ Correct. cin >> chains to read two separate integers; 3 + 7 = 10.',
+ fb_fail:'✗ Incorrect. Chained >> reads into each variable in order.'},
+
+{id:83,title:'I/O — setw manipulator',type:'mc',diff:'hard',
+ q:'What does the <code>setw(n)</code> manipulator from <code>&lt;iomanip&gt;</code> do?',
+ opts:['Sets the maximum number of decimal digits.','Reserves n characters of width for the next output.','Sets the font size to n.','Adds n spaces after every output.'],correct:1,
+ fb_ok:'✓ Correct. setw(n) sets the field width for the very next output operation.',
+ fb_fail:'✗ Incorrect. setw reserves a fixed-width field for the next value printed.'},
+
+{id:84,title:'I/O — ignored input bug',type:'bug',diff:'hard',
+ q:'Find the line responsible for getline() reading an empty string after an integer input.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">age</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="var">cin</span> <span class="op">&gt;&gt;</span> <span class="var">age</span><span class="punct">;</span>`},
+   {ln:3,code:`<span class="kw">string</span> <span class="var">name</span><span class="punct">;</span>`},
+   {ln:4,code:`<span class="fn">getline</span><span class="punct">(</span><span class="var">cin</span><span class="punct">,</span> <span class="var">name</span><span class="punct">);</span>`},
+   {ln:5,code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">name</span><span class="punct">;</span>`}
+ ],correctLine:4,
+ fb_ok:'✓ Correct. After cin >> age, the newline stays in the buffer. getline() on line 4 reads that leftover newline as empty. A cin.ignore() is needed between lines 2 and 4.',
+ fb_fail:'✗ Incorrect. The problem is that getline reads the leftover newline from the previous cin >> operation.'},
+
+{id:85,title:'I/O — output chaining',type:'predict',diff:'hard',
+ code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"A"</span> <span class="op">&lt;&lt;</span> <span class="str">"B"</span> <span class="op">&lt;&lt;</span> <span class="kw">endl</span> <span class="op">&lt;&lt;</span> <span class="str">"C"</span><span class="punct">;</span>`,
+ q:'Predict the exact output (use a newline as shown).',
+ inputs:[{id:'p85a',sym:'$',ph:'line 1 then line 2...'}],
+ answers:['AB\nC'],
+ fb_ok:'✓ Correct. "A" and "B" print on the same line, then endl causes "C" to appear on the next line.',
+ fb_fail:'✗ Incorrect. Only endl or "\\n" moves to the next line; the rest chain on the same line.'},
+
+{id:86,title:'Operators — pre vs post increment',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">3</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="op">++</span><span class="var">a</span> <span class="op">&lt;&lt;</span> <span class="str">" "</span> <span class="op">&lt;&lt;</span> <span class="var">a</span><span class="op">++</span> <span class="op">&lt;&lt;</span> <span class="str">" "</span> <span class="op">&lt;&lt;</span> <span class="var">a</span><span class="punct">;</span>`,
+ q:'Predict the exact output.',
+ inputs:[{id:'p86a',sym:'$',ph:'e.g. 4 4 5'}],
+ answers:['4 4 5'],
+ fb_ok:'✓ Correct. ++a increments first to 4. a++ prints 4 then increments to 5. Final a is 5.',
+ fb_fail:'✗ Incorrect. Pre-increment (++a) changes before printing; post-increment (a++) changes after printing.'},
+
+{id:87,title:'Operators — bitwise AND',type:'mc',diff:'xhard',
+ q:'What is the result of <code>6 &amp; 3</code> in C++?',
+ opts:['9','5','2','7'],correct:2,
+ fb_ok:'✓ Correct. 6 is 0110 and 3 is 0011 in binary. Bitwise AND gives 0010 = 2.',
+ fb_fail:'✗ Incorrect. Convert both to binary and apply AND bit by bit: 0110 & 0011 = 0010 = 2.'},
+
+{id:88,title:'Operators — divide-assign',type:'predict',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">20</span><span class="punct">;</span>\n<span class="var">x</span> <span class="op">/=</span> <span class="num">3</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span><span class="punct">;</span>`,
+ q:'Predict the result of this compound division.',
+ inputs:[{id:'p88a',sym:'$',ph:'number...'}],
+ answers:['6'],
+ fb_ok:'✓ Correct. 20 / 3 using integer division = 6 (remainder discarded).',
+ fb_fail:'✗ Incorrect. Integer division truncates. 20 / 3 = 6 remainder 2, so x becomes 6.'},
+
+{id:89,title:'Operators — wrong equality bug',type:'bug',diff:'hard',
+ q:'Find the bug that prevents the loop from ever printing anything.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">count</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">while</span><span class="punct">(</span><span class="var">count</span> <span class="op">&lt;</span> <span class="num">5</span><span class="punct">) {</span>`},
+   {ln:3,code:`  <span class="kw">if</span><span class="punct">(</span><span class="var">count</span> <span class="op">%</span> <span class="num">2</span> <span class="op">=</span> <span class="num">0</span><span class="punct">)</span> <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">count</span><span class="punct">;</span>`},
+   {ln:4,code:`  <span class="var">count</span><span class="op">++</span><span class="punct">;</span>`},
+   {ln:5,code:`<span class="punct">}</span>`}
+ ],correctLine:3,
+ fb_ok:'✓ Correct. Using = instead of == inside the if condition is an assignment, not a comparison. This may cause a compile error or always evaluate unexpectedly.',
+ fb_fail:'✗ Incorrect. Look at the conditional operator inside the if on line 3.'},
+
+{id:90,title:'Operators — modulo chain',type:'predict',diff:'xhard',
+ code:`<span class="kw">int</span> <span class="var">a</span> <span class="op">=</span> <span class="num">25</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">a</span> <span class="op">%</span> <span class="num">7</span> <span class="op">%</span> <span class="num">3</span><span class="punct">;</span>`,
+ q:'Predict the output of this chained modulo expression.',
+ inputs:[{id:'p90a',sym:'$',ph:'number...'}],
+ answers:['1'],
+ fb_ok:'✓ Correct. 25 % 7 = 4, then 4 % 3 = 1.',
+ fb_fail:'✗ Incorrect. Evaluate left to right: 25 % 7 first, then apply % 3 to that result.'},
+
+{id:91,title:'Mixed — multiple output predict',type:'predict',diff:'xhard',
+ code:`<span class="kw">int</span> <span class="var">x</span> <span class="op">=</span> <span class="num">2</span><span class="punct">;</span>\n<span class="kw">int</span> <span class="var">y</span> <span class="op">=</span> <span class="num">3</span><span class="punct">;</span>\n<span class="kw">if</span><span class="punct">(</span><span class="var">x</span> <span class="op">+</span> <span class="var">y</span> <span class="op">&gt;</span> <span class="num">4</span><span class="punct">)</span>\n  <span class="var">y</span> <span class="op">*=</span> <span class="num">2</span><span class="punct">;</span>\n<span class="kw">cout</span> <span class="op">&lt;&lt;</span> <span class="var">x</span> <span class="op">+</span> <span class="var">y</span><span class="punct">;</span>`,
+ q:'Predict the final output.',
+ inputs:[{id:'p91a',sym:'$',ph:'number...'}],
+ answers:['8'],
+ fb_ok:'✓ Correct. x+y=5 > 4 so y becomes 3*2=6. Final output: 2+6=8.',
+ fb_fail:'✗ Incorrect. Check whether the condition is true, then apply the *= update before computing the last line.'},
+
+{id:92,title:'Mixed — scope reuse',type:'mc',diff:'hard',
+ code:`<span class="kw">int</span> <span class="var">total</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>\n<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">1</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;=</span><span class="num">3</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">)</span>\n  <span class="var">total</span> <span class="op">+=</span> <span class="var">i</span> <span class="op">*</span> <span class="var">i</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">total</span><span class="punct">;</span>`,
+ q:'What is the output?',
+ opts:['6','9','14','12'],correct:2,
+ fb_ok:'✓ Correct. 1² + 2² + 3² = 1 + 4 + 9 = 14.',
+ fb_fail:'✗ Incorrect. Square each i and accumulate: 1*1 + 2*2 + 3*3 = 14.'},
+
+{id:93,title:'Mixed — string in loop',type:'predict',diff:'hard',
+ code:`<span class="kw">string</span> <span class="var">res</span> <span class="op">=</span> <span class="str">""</span><span class="punct">;</span>\n<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">0</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;</span><span class="num">3</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">)</span>\n  <span class="var">res</span> <span class="op">+=</span> <span class="str">"Hi"</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">res</span><span class="punct">;</span>`,
+ q:'Predict the exact output.',
+ inputs:[{id:'p93a',sym:'$',ph:'exact output...'}],
+ answers:['HiHiHi'],
+ fb_ok:'✓ Correct. += appends "Hi" three times, producing "HiHiHi".',
+ fb_fail:'✗ Incorrect. The += operator appends a string each iteration. Count 3 iterations.'},
+
+{id:94,title:'Mixed — uninitialized variable bug',type:'bug',diff:'hard',
+ q:'Find the line that introduces undefined behavior due to an uninitialized variable.',
+ buglines:[
+   {ln:1,code:`<span class="kw">int</span> <span class="var">total</span><span class="punct">;</span>`},
+   {ln:2,code:`<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">1</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;=</span><span class="num">3</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">) {</span>`},
+   {ln:3,code:`  <span class="var">total</span> <span class="op">+=</span> <span class="var">i</span><span class="punct">;</span>`},
+   {ln:4,code:`<span class="punct">}</span>`},
+   {ln:5,code:`<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">total</span><span class="punct">;</span>`}
+ ],correctLine:1,
+ fb_ok:'✓ Correct. total is declared but not initialized to 0 on line 1. Using it in += on line 3 produces undefined behavior.',
+ fb_fail:'✗ Incorrect. Before accumulating a sum, the variable must be initialized to a known value, usually 0.'},
+
+{id:95,title:'Mixed — boolean expression',type:'predict',diff:'hard',
+ code:`<span class="kw">bool</span> <span class="var">a</span> <span class="op">=</span> <span class="kw">true</span><span class="punct">,</span> <span class="var">b</span> <span class="op">=</span> <span class="kw">false</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="punct">(</span><span class="var">a</span> <span class="op">||</span> <span class="var">b</span><span class="punct">)</span> <span class="op">&lt;&lt;</span> <span class="str">" "</span> <span class="op">&lt;&lt;</span> <span class="punct">(</span><span class="var">a</span> <span class="op">&amp;&amp;</span> <span class="var">b</span><span class="punct">);</span>`,
+ q:'Predict the exact output.',
+ inputs:[{id:'p95a',sym:'$',ph:'e.g. 1 0'}],
+ answers:['1 0'],
+ fb_ok:'✓ Correct. true || false = 1, true && false = 0. C++ prints booleans as 1 or 0 by default.',
+ fb_fail:'✗ Incorrect. C++ prints bool values as 1 (true) or 0 (false). Evaluate each operator.'},
+
+{id:96,title:'Mixed — char in if',type:'mc',diff:'hard',
+ code:`<span class="kw">char</span> <span class="var">grade</span> <span class="op">=</span> <span class="str">'B'</span><span class="punct">;</span>\n<span class="kw">if</span><span class="punct">(</span><span class="var">grade</span> <span class="op">==</span> <span class="str">'A'</span> <span class="op">||</span> <span class="var">grade</span> <span class="op">==</span> <span class="str">'B'</span><span class="punct">)</span>\n  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Pass"</span><span class="punct">;</span>\n<span class="kw">else</span>\n  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Fail"</span><span class="punct">;</span>`,
+ q:'What is the output?',
+ opts:['Pass','Fail','B','Compile error'],correct:0,
+ fb_ok:'✓ Correct. grade is \'B\', which matches the second condition, so "Pass" is printed.',
+ fb_fail:'✗ Incorrect. The || means if either condition is true the whole expression is true. grade == \'B\' is true.'},
+
+{id:97,title:'Mixed — type cast predict',type:'predict',diff:'xhard',
+ code:`<span class="kw">double</span> <span class="var">x</span> <span class="op">=</span> <span class="num">9.99</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="punct">(</span><span class="kw">int</span><span class="punct">)</span><span class="var">x</span> <span class="op">+</span> <span class="num">1</span><span class="punct">;</span>`,
+ q:'Predict the exact output.',
+ inputs:[{id:'p97a',sym:'$',ph:'number...'}],
+ answers:['10'],
+ fb_ok:'✓ Correct. Casting 9.99 to int truncates to 9, then 9 + 1 = 10.',
+ fb_fail:'✗ Incorrect. C-style cast to int truncates (does not round). Then add 1.'},
+
+{id:98,title:'Mixed — string empty check',type:'fill',diff:'hard',
+ code:`<span class="kw">string</span> <span class="var">s</span> <span class="op">=</span> <span class="str">""</span><span class="punct">;</span>\n<span class="kw">if</span><span class="punct">(</span><span class="var">s</span><span class="punct">.</span><span class="kw">____</span><span class="punct">())</span>\n  <span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="str">"Empty"</span><span class="punct">;</span>`,
+ q:'Fill in the string method that returns true when a string has no characters.',
+ ph:'method',answers:['empty'],
+ fb_ok:'✓ Correct. s.empty() returns true when the string length is 0.',
+ fb_fail:'✗ Incorrect. The method is empty().'},
+
+{id:99,title:'Mixed — complex loop condition',type:'predict',diff:'xhard',
+ code:`<span class="kw">int</span> <span class="var">i</span> <span class="op">=</span> <span class="num">1</span><span class="punct">;</span>\n<span class="kw">int</span> <span class="var">count</span> <span class="op">=</span> <span class="num">0</span><span class="punct">;</span>\n<span class="kw">while</span><span class="punct">(</span><span class="var">i</span> <span class="op">&lt;=</span> <span class="num">10</span><span class="punct">) {</span>\n  <span class="kw">if</span><span class="punct">(</span><span class="var">i</span> <span class="op">%</span> <span class="num">3</span> <span class="op">==</span> <span class="num">0</span><span class="punct">)</span> <span class="var">count</span><span class="op">++</span><span class="punct">;</span>\n  <span class="var">i</span><span class="op">++</span><span class="punct">;</span>\n<span class="punct">}</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">count</span><span class="punct">;</span>`,
+ q:'Predict how many multiples of 3 exist from 1 to 10.',
+ inputs:[{id:'p99a',sym:'$',ph:'number...'}],
+ answers:['3'],
+ fb_ok:'✓ Correct. 3, 6, and 9 are the multiples of 3 between 1 and 10 — count = 3.',
+ fb_fail:'✗ Incorrect. List the numbers from 1 to 10 divisible by 3: 3, 6, 9.'},
+
+{id:100,title:'Mixed — combined concepts',type:'mc',diff:'xhard',
+ code:`<span class="kw">int</span> <span class="var">n</span> <span class="op">=</span> <span class="num">5</span><span class="punct">;</span>\n<span class="kw">int</span> <span class="var">result</span> <span class="op">=</span> <span class="num">1</span><span class="punct">;</span>\n<span class="kw">for</span><span class="punct">(</span><span class="kw">int</span> <span class="var">i</span><span class="op">=</span><span class="num">1</span><span class="punct">;</span> <span class="var">i</span><span class="op">&lt;=</span><span class="var">n</span><span class="punct">;</span> <span class="var">i</span><span class="op">++</span><span class="punct">)</span>\n  <span class="var">result</span> <span class="op">*=</span> <span class="var">i</span><span class="punct">;</span>\n<span class="var">cout</span> <span class="op">&lt;&lt;</span> <span class="var">result</span><span class="punct">;</span>`,
+ q:'What does this program compute and what is its output?',
+ opts:['Sum 1 to 5, outputs 15','Factorial of 5, outputs 120','Power of 5, outputs 25','Product of odd numbers, outputs 15'],correct:1,
+ fb_ok:'✓ Correct. This is the factorial of 5: 1×2×3×4×5 = 120.',
+ fb_fail:'✗ Incorrect. The loop multiplies result by each i from 1 to 5 — that is 5 factorial = 120.'}
+
+];
+
+// ── SHUFFLE ─────────────────────────────────────
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a;
+}
+
+// ── STATE ────────────────────────────────────────
+let Q=[],scores=[],currentDragChipId=null,selectedChip=null;
+const TOTAL=QBANK.length;
+let tabLeaveCount=0,focusLeaveCount=0,fullscreenExitCount=0,violationCount=0,screenshotAttemptCount=0,activityStarted=false,predictedBand=null;
+let mobileFullscreenBypass=false;
+let warnAutoTimer=null;
+let lastViolationAt=0;
+let screenshotDebounceUntil=0;
+
+function isMobileExamDevice(){
+  const ua=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent||'');
+  const ipadOS=navigator.maxTouchPoints>1&&/MacIntel/.test(navigator.platform||'');
+  const coarse=typeof window.matchMedia==='function'&&window.matchMedia('(pointer: coarse)').matches;
+  const narrow=typeof window.matchMedia==='function'&&window.matchMedia('(max-width: 900px)').matches;
+  return ua||ipadOS||(coarse&&narrow);
+}
+function skipMobileFullscreenExam(){
+  mobileFullscreenBypass=true;
+  document.getElementById('fs-overlay').classList.remove('show');
+  saveProgress();
+}
+const VIOLATION_PENALTY=5;
+const VIOLATION_COOLDOWN_MS=1200;
+
+function isFullscreenActive(){
+  return !!document.fullscreenElement;
+}
+
+function registerViolation(reason,opts={}){
+  const silent=!!opts.silent;
+  const title=opts.title||'Security Violation Detected';
+  if(!activityStarted||finished)return false;
+  const now=Date.now();
+  if(now-lastViolationAt<VIOLATION_COOLDOWN_MS)return false;
+  lastViolationAt=now;
+  violationCount++;
+  updateScoreDisplay();
+  saveProgress();
+  if(silent)return true;
+  const el=document.getElementById('warn-overlay');
+  const countEl=document.getElementById('warn-count');
+  countEl.textContent=`Incident #${violationCount} · Total penalty: −${violationCount*VIOLATION_PENALTY} pts`;
+  const msgEl=el.querySelector('.warn-msg');
+  if(msgEl)msgEl.innerHTML=`${reason}<br>This incident has been recorded.`;
+  const titleEl=el.querySelector('.warn-title');
+  if(titleEl)titleEl.textContent=title;
+  el.classList.add('show');
+  let secs=5;
+  const cdEl=document.getElementById('warn-countdown');
+  cdEl.textContent=`Auto-closing in ${secs}s`;
+  clearInterval(warnAutoTimer);
+  warnAutoTimer=setInterval(()=>{
+    secs--;
+    if(secs<=0){clearInterval(warnAutoTimer);dismissWarning();}
+    else cdEl.textContent=`Auto-closing in ${secs}s`;
+  },1000);
+  return true;
+}
+
+function isPrintScreenKey(e){
+  return e.key==='PrintScreen'||e.code==='PrintScreen'||e.code==='Snapshot';
+}
+function isScreenshotShortcutCombo(e){
+  const k=e.key;
+  if(k==='F13'||k==='F14')return true;
+  if(e.shiftKey&&e.metaKey&&(k==='3'||k==='4'||k==='5'))return true;
+  if(e.shiftKey&&e.metaKey&&(k==='s'||k==='S'))return true;
+  const osMod=e.metaKey||e.getModifierState?.('OS')||e.getModifierState?.('Super');
+  if(e.shiftKey&&osMod&&(k==='s'||k==='S'))return true;
+  if(e.shiftKey&&e.altKey&&(k==='s'||k==='S'))return true;
+  if((e.metaKey||osMod)&&e.altKey&&(k==='p'||k==='P'||e.code==='PrintScreen'))return true;
+  return false;
+}
+function recordScreenshotAttempt(){
+  if(!activityStarted||finished)return;
+  const now=Date.now();
+  if(now<screenshotDebounceUntil)return;
+  screenshotDebounceUntil=now+850;
+  screenshotAttemptCount++;
+  if(!registerViolation('Screen capture or screenshot shortcut was used.',{title:'Screenshot attempt detected'})){
+    screenshotAttemptCount--;
+    return;
+  }
+}
+
+function armScreenshotWatchers(){
+  document.addEventListener('keydown',e=>{
+    if(!activityStarted||finished)return;
+    if(!isScreenshotShortcutCombo(e))return;
+    e.preventDefault();
+    e.stopPropagation();
+    recordScreenshotAttempt();
+  },true);
+  document.addEventListener('keyup',e=>{
+    if(!activityStarted||finished)return;
+    if(!isPrintScreenKey(e))return;
+    e.preventDefault();
+    e.stopPropagation();
+    recordScreenshotAttempt();
+  },true);
+}
+
+function showFullscreenOverlay(reason,opts={}){
+  const fs=document.getElementById('fs-overlay');
+  const msg=document.getElementById('fs-msg');
+  const count=document.getElementById('fs-count');
+  const pen=document.getElementById('fs-penalty-block');
+  const skip=document.getElementById('fs-skip-mobile');
+  msg.textContent=reason||'You exited fullscreen. Re-enter fullscreen to continue this activity.';
+  count.textContent=`Incident #${violationCount} · Total penalty: −${violationCount*VIOLATION_PENALTY} pts`;
+  if(pen)pen.style.display=opts.hidePenalty?'none':'';
+  if(skip){
+    if(opts.showSkipButton===false)skip.style.display='none';
+    else if(opts.showSkipButton===true)skip.style.display='inline-block';
+    else skip.style.display=isMobileExamDevice()?'inline-block':'none';
+  }
+  fs.classList.add('show');
+}
+
+async function requestFullscreenSafe(){
+  if(isFullscreenActive())return true;
+  const root=document.documentElement;
+  if(!root.requestFullscreen)return false;
+  try{
+    await root.requestFullscreen({navigationUI:'hide'});
+    return true;
+  }catch(e){
+    return false;
+  }
+}
+
+async function reenterFullscreen(){
+  const ok=await requestFullscreenSafe();
+  if(ok)document.getElementById('fs-overlay').classList.remove('show');
+}
+
+function armSecurityWatchers(){
+  document.addEventListener('visibilitychange',()=>{
+    if(!activityStarted||finished)return;
+    if(document.visibilityState==='hidden'){
+      tabLeaveCount++;
+      registerViolation('Window was hidden or tab was switched.');
+    }
+  });
+  window.addEventListener('blur',()=>{
+    if(!activityStarted||finished)return;
+    if(isMobileExamDevice())return;
+    focusLeaveCount++;
+    registerViolation('Window lost focus (possible floating window/app switch).');
+  });
+  document.addEventListener('fullscreenchange',()=>{
+    if(!activityStarted||finished)return;
+    if(mobileFullscreenBypass){
+      if(isFullscreenActive())document.getElementById('fs-overlay').classList.remove('show');
+      return;
+    }
+    if(!isFullscreenActive()){
+      fullscreenExitCount++;
+      registerViolation('Fullscreen mode was exited.');
+      showFullscreenOverlay('Fullscreen was exited. Re-enter fullscreen to continue.',{showSkipButton:isMobileExamDevice()});
+    }else{
+      document.getElementById('fs-overlay').classList.remove('show');
+    }
+  });
+}
+
+// ── TAB-LEAVE ────────────────────────────────────
+function dismissWarning(){
+  clearInterval(warnAutoTimer);
+  document.getElementById('warn-overlay').classList.remove('show');
+}
+function updateScoreDisplay(){
+  const ok=scores.filter(s=>s===true).length;
+  const penalty=violationCount*VIOLATION_PENALTY;
+  //document.getElementById('score-tag').textContent=`Score: ${ok} (−${penalty})`;
+}
+
+async function setPrediction(band){
+  predictedBand=band;
+  document.getElementById('pred-overlay').classList.remove('show');
+  activityStarted=true;
+  const entered=await requestFullscreenSafe();
+  if(!entered){
+    if(isMobileExamDevice()){
+      showFullscreenOverlay('Your browser may not support fullscreen. You can still take the quiz — stay in this tab until you finish.',{hidePenalty:true,showSkipButton:true});
+    }else{
+      registerViolation('Fullscreen entry was denied by the browser.',{silent:true});
+      showFullscreenOverlay('Please allow fullscreen to continue the activity.',{showSkipButton:false});
+    }
+  }
+}
+
+// ── INIT ─────────────────────────────────────────
+function initActivity(){
+  Q=shuffle(QBANK);
+  scores=new Array(TOTAL).fill(null);
+  buildNav();buildScreens();buildBottomDots();goTo(0);startTimer();
+}
+
+// ── BUILD NAV ────────────────────────────────────
+function buildNav(){
+  const root=document.getElementById('nav-root');
+  root.innerHTML='';
+  Q.forEach((q,i)=>{
+    const labels={mc:'MC',fill:'Fill',predict:'Predict',bug:'Bug',match:'Match'};
+    const el=document.createElement('div');
+    el.className='nav-it';el.id='nav-'+i;el.onclick=()=>goTo(i);
+    el.innerHTML=`<div class="nav-n">${i+1}</div><div class="nav-txt">${q.title}</div><div class="nav-badge">${labels[q.type]||q.type}</div>`;
+    root.appendChild(el);
+  });
+}
+
+// ── BUILD BOTTOM DOTS ────────────────────────────
+function buildBottomDots(){
+  const container=document.getElementById('bb-dots');
+  container.innerHTML='';
+  Q.forEach((_,i)=>{
+    const d=document.createElement('div');
+    d.className='bb-dot';d.id='bbdot-'+i;
+    d.title=`Q${i+1}`;
+    d.onclick=()=>goTo(i);
+    container.appendChild(d);
+  });
+  updateBottomDot(0);
+}
+function updateBottomDot(active){
+  Q.forEach((_,i)=>{
+    const d=document.getElementById('bbdot-'+i);
+    if(!d)return;
+    d.className='bb-dot';
+    if(scores[i]===true)d.classList.add('done-ok');
+    else if(scores[i]===false)d.classList.add('done-fail');
+    if(i===active)d.classList.add('current');
+  });
+}
+
+// ── BUILD SCREENS ────────────────────────────────
+function buildScreens(){
+  const root=document.getElementById('screens-root');
+  root.innerHTML='';
+  Q.forEach((q,i)=>{
+    const div=document.createElement('div');
+    div.className='screen';div.id='screen-'+i;
+    div.innerHTML=buildQHTML(q,i);
+    root.appendChild(div);
+  });
+}
+
+function buildQHTML(q,i){
+  const tl={mc:'Multiple Choice',fill:'Fill in the Blank',predict:'Predict Output',bug:'Bug Hunt',match:'Drag Match'};
+  const tc={mc:'t-mc',fill:'t-fill',predict:'t-pred',bug:'t-bug',match:'t-match'};
+  const dl={easy:'Easy',med:'Medium',hard:'Hard',xhard:'Expert'};
+  const dc={easy:'diff-easy',med:'diff-med',hard:'diff-hard',xhard:'diff-xhard'};
+  let body='';
+  if(q.code)body+=`<div class="code">${q.code}</div>`;
+  body+=`<div class="q-text">${q.q}</div>`;
+  if(q.type==='mc'){
+    // Shuffle options per load
+    const optOrder=shuffle(q.opts.map((_,oi)=>oi));
+    const labels=['A','B','C','D'];
+    const wide=q.opts.some(o=>o.length>22);
+    body+=`<div class="opts${wide?' wide':''}" id="opts-${i}" data-opt-order="${optOrder.join(',')}">`;
+    optOrder.forEach((oi,li)=>{
+      if(q.opts[oi]===undefined)return;
+      body+=`<button class="opt" onclick="checkMC(${i},${oi})"><span class="opt-k">${labels[li]}</span>${q.opts[oi]}</button>`;
+    });
+    body+='</div>';
+  } else if(q.type==='fill'){
+    body+=`<input class="fill-inp" id="fill-${i}" placeholder="${q.ph||'Type your answer...'}" autocomplete="off" spellcheck="false">`;
+  } else if(q.type==='predict'){
+    q.inputs.forEach(inp=>{
+      body+=`<div class="out-line"><span class="out-sym">${inp.sym}</span><input class="out-inp" id="inp-${i}-${inp.id}" placeholder="${inp.ph||'...'}" autocomplete="off" spellcheck="false"></div>`;
+    });
+  } else if(q.type==='bug'){
+    body+=`<div class="bug-lines" id="buglines-${i}">`;
+    q.buglines.forEach(bl=>{
+      body+=`<div class="bug-line" id="bugline-${i}-${bl.ln}" onclick="pickBugLine(${i},${bl.ln})"><div class="bug-lnum">${bl.ln}</div><div class="bug-code">${bl.code}</div></div>`;
+    });
+    body+='</div>';
+  } else if(q.type==='match'){
+    body+=buildMatchHTML(q,i);
+  }
+  body+=`<div class="fb" id="fb-${i}"></div>`;
+  let btns=`<div class="btn-row">`;
+  if(q.type==='fill')btns+=`<button class="btn btn-pri" id="sub-${i}" onclick="checkFill(${i})">Submit</button>`;
+  else if(q.type==='predict')btns+=`<button class="btn btn-pri" id="sub-${i}" onclick="checkPredict(${i})">Submit</button>`;
+  else if(q.type==='match')btns+=`<button class="btn btn-pri" id="sub-${i}" onclick="checkMatch(${i})">Submit</button>`;
+  btns+=`<button class="btn btn-nxt" id="nxt-${i}" onclick="goTo(${i+1<TOTAL?i+1:i})">${i===TOTAL-1?'':'Next →'}</button></div>`;
+  body+=btns;
+  return `<div class="card"><div class="card-bar"><div class="dot d-r"></div><div class="dot d-y"></div><div class="dot d-g"></div><span class="c-file">question_${i+1}.cpp</span><span class="c-type ${tc[q.type]||'t-mc'}">${tl[q.type]||q.type}</span></div><div class="card-body"><div class="q-lbl">Q${i+1} of ${TOTAL} <span class="q-diff ${dc[q.diff]||'diff-med'}">${dl[q.diff]||q.diff}</span></div>${body}</div></div>`;
+}
+
+function buildMatchHTML(q,i){
+  const chipOrder=shuffle(q.chips.map((_,ci)=>ci));
+  let h=`<div class="match-grid">`;
+  h+=`<div><div class="match-col-lbl">Drag from here</div><div class="chip-pool" id="pool-${i}">`;
+  chipOrder.forEach(ci=>{
+    h+=`<div class="m-chip" id="chip-${i}-${ci}" draggable="true" ondragstart="dragStart(event,'chip-${i}-${ci}')" onclick="chipClick(${i},${ci})">${q.chips[ci]}</div>`;
+  });
+  h+=`</div></div>`;
+  const dropOrder=shuffle(q.dropDescs.map((_,di)=>di));
+  h+=`<div><div class="match-col-lbl">Drop here</div><div class="drop-rows" id="drops-${i}">`;
+  dropOrder.forEach(di=>{
+    h+=`<div class="drop-row"><div class="drop-desc">${q.dropDescs[di]}</div><div class="drop-slot" id="slot-${i}-${di}" ondragover="event.preventDefault();this.classList.add('over')" ondragleave="this.classList.remove('over')" ondrop="dropChip(event,${i},${di})" onclick="slotClick(${i},${di})"><span class="slot-hint">drop here</span></div></div>`;
+  });
+  h+=`</div></div></div>`;
+  return h;
+}
+
+// ── NAVIGATION ───────────────────────────────────
+let currentQ=0;
+function goTo(i){
+  if(i<0||i>=TOTAL)return;
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+  document.getElementById('screen-'+i)?.classList.add('active');
+  const nav=document.getElementById('nav-'+i);
+  if(nav){nav.classList.add('active');nav.scrollIntoView({block:'nearest'});}
+  document.getElementById('screen-result').classList.remove('active');
+  currentQ=i;
+  // update bottom bar
+  document.getElementById('bb-qnum').textContent=`Q${i+1} / ${TOTAL}`;
+  document.getElementById('bb-prev').disabled=(i===0);
+  document.getElementById('bb-next').disabled=(i===TOTAL-1);
+  updateBottomDot(i);
+}
+function bbPrev(){if(currentQ>0)goTo(currentQ-1);}
+function bbNext(){if(currentQ<TOTAL-1)goTo(currentQ+1);}
+
+// ── TRIPLE CONFIRM FLOW ──────────────────────────
+function triggerFinishFlow(){
+  if(finished)return;
+  const unanswered=scores.filter(s=>s===null).length;
+  const el=document.getElementById('confirm-unanswered-1');
+  el.textContent=unanswered>0?`⚠ ${unanswered} question${unanswered>1?'s':''} still unanswered — will be marked incorrect`:'';
+  document.getElementById('confirm-overlay-1').classList.add('show');
+}
+function confirmStep2(){
+  document.getElementById('confirm-overlay-1').classList.remove('show');
+  document.getElementById('confirm-overlay-2').classList.add('show');
+}
+function confirmStep3(){
+  document.getElementById('confirm-overlay-2').classList.remove('show');
+  document.getElementById('confirm-overlay-3').classList.add('show');
+}
+function closeConfirm(){
+  document.getElementById('confirm-overlay-1').classList.remove('show');
+  document.getElementById('confirm-overlay-2').classList.remove('show');
+  document.getElementById('confirm-overlay-3').classList.remove('show');
+}
+function finalSubmit(){
+  document.getElementById('confirm-overlay-3').classList.remove('show');
+  scores=scores.map(s=>s===null?false:s);
+  clearProgress();
+  showResult();
+}
+
+// ── RESULT ───────────────────────────────────────
+function showResult(){
+
+  finished=true;clearInterval(timerIv);updateTimerUI();
+  document.querySelector('.bottom-bar').style.display = 'none';
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-it').forEach(n=>n.classList.remove('active'));
+  document.getElementById('screen-result').classList.add('active');
+  document.getElementById('nav-result-wrap').style.display='block';
+  const ok=scores.filter(s=>s===true).length;
+  const fail=scores.filter(s=>s===false).length;
+  
+  const pct=Math.round(ok/TOTAL*100);
+  const penaltyPts = violationCount * VIOLATION_PENALTY;   // Calculates the total penalty points
+  const finalScore = ok - penaltyPts;     // Subtracts penalty points from correct answers
+  document.getElementById('res-emoji').textContent=pct>=80?'🎉':pct>=60?'👍':'📝';
+  document.getElementById('r-ok').textContent=ok;
+  document.getElementById('r-fail').textContent=fail;
+  document.getElementById('r-pct').textContent=pct+'%';
+  document.getElementById('r-tabswitch').textContent=violationCount;
+  document.getElementById('r-screenshot').textContent=screenshotAttemptCount;
+  document.getElementById('r-penalty').textContent='−'+penaltyPts+' pts';
+  // Aristotle
+  if(predictedBand){
+    const card=document.getElementById('aristotle-card');
+    const predLow=parseInt(predictedBand.split('-')[0]);
+    const predHigh=parseInt(predictedBand.split('-')[1]);
+    const beat=ok>predHigh,matched=ok>=predLow&&ok<=predHigh;
+    const QUOTES={'0-24':{beat:"Even the humble seed, when it surpasses its own expectation, carries within it the promise of an oak.",match:"To know that you know nothing — this is the beginning of wisdom. You have found your starting point.",short:"To know that you know nothing — this is the beginning of wisdom. You have found your starting point."},'25-34':{beat:"Excellence is not a gift, but a skill that takes practice. Today, you practiced better than you believed.",match:"You aimed with honesty and struck true. A virtuous mind knows its current measure.",short:"The roots of education are bitter, but the fruit is sweet. Return to the roots."},'35-45':{beat:"We are what we repeatedly do. It seems you have been doing more than you have given yourself credit for.",match:"Knowing yourself is the beginning of all wisdom. You know yourself well — now push beyond.",short:"Patience is bitter, yet its fruit is sweet. The gap between ambition and result is merely unfinished practice."},'46-50':{beat:"Flawless. You knew exactly what you were capable of. This is eudaimonia.",match:"You have reached the highest form — where knowledge, effort, and expectation become one. This is eudaimonia.",short:"It is possible to fail in many ways, but to succeed is possible only in one way. You are close. Find that one way."}};
+    const outcome=beat?'beat':matched?'match':'short';
+    const quote=QUOTES[predictedBand][outcome];
+    const scoreColor=beat||matched?'var(--teal)':'var(--red)';
+    document.getElementById('aris-pred-val').textContent=predictedBand;
+    document.getElementById('aris-score-val').textContent=finalScore;
+    document.getElementById('aris-score-val').style.color=scoreColor;
+    document.getElementById('aris-quote').textContent='"'+quote+'"';
+    card.style.display='block';
+  }
+  if(currentUser){
+    // --- NEW LOCAL STORAGE SAVE ---
+    localStorage.setItem(`cpp_assessment_${currentUser.id}`, `${ok}/${TOTAL}`);
+    // ------------------------------
+    document.getElementById('res-id-card').innerHTML=`<span style="color:var(--text3)">ID:</span> <span class="val">${currentUser.id}</span>&ensp;·&ensp;<span class="val">${currentUser.name}</span>`;
+  }
+  const now=new Date();
+  document.getElementById('res-ts').textContent='Submitted: '+now.toLocaleString('en-PH',{year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});
+  const rb=document.getElementById('review-block');
+  rb.innerHTML='';
+  Q.forEach((q,i)=>{
+    const d=document.createElement('div');
+    d.className='rev-item '+(scores[i]?'ok':'fail');
+    d.innerHTML=`<span>${scores[i]?'✓':'✗'}</span><span>Q${i+1}: ${q.title}</span>`;
+    rb.appendChild(d);
+  });
+  // Build answer key (hidden, needs password)
+  buildAnswerKey();
+}
+
+function buildAnswerKey(){
+  const body=document.getElementById('answer-key-body');
+  body.innerHTML=`<div class="ak-lbl">Answer Key — ${Q.length} Questions</div>`;
+  Q.forEach((q,i)=>{
+    const tl={mc:'MC',fill:'Fill',predict:'Predict',bug:'Bug',match:'Match'};
+    let ans='';
+    if(q.type==='mc')ans=q.opts[q.correct];
+    else if(q.type==='fill')ans=q.answers[0];
+    else if(q.type==='predict')ans=q.answers.join(' | ');
+    else if(q.type==='bug')ans='Line '+q.correctLine;
+    else if(q.type==='match')ans=q.answers.join(' → ');
+    const row=document.createElement('div');
+    row.className='ak-row';
+    row.innerHTML=`<span class="ak-num">Q${i+1}</span><span class="ak-title">${q.title} <span style="color:var(--text3);font-size:9px;">[${tl[q.type]}]</span></span><span class="ak-ans">${ans}</span>`;
+    body.appendChild(row);
+  });
+}
+function unlockAnswerKey(){
+  const pw=document.getElementById('ak-password').value;
+  if(pw==='admin1234567890'){
+    document.getElementById('answer-key-body').classList.add('show');
+    document.getElementById('ak-password').disabled=true;
+    document.querySelector('#answer-key-section button').disabled=true;
+    document.querySelector('#answer-key-section button').textContent='✓ Unlocked';
+  } else {
+    document.getElementById('ak-password').style.borderColor='var(--red)';
+    setTimeout(()=>document.getElementById('ak-password').style.borderColor='',1000);
+  }
+}
+
+// ── SCORING ──────────────────────────────────────
+function markScore(qi,correct){
+  scores[qi]=correct;
+  const nav=document.getElementById('nav-'+qi);
+  if(nav){nav.classList.remove('done-ok','done-fail');nav.classList.add(correct?'done-ok':'done-fail');}
+  const ans=scores.filter(s=>s!==null).length;
+  const ok=scores.filter(s=>s===true).length;
+  document.getElementById('prog-lbl').textContent=`${ans} / ${TOTAL}`;
+  document.getElementById('prog-fill').style.width=(ans/TOTAL*100)+'%';
+  updateScoreDisplay();
+  updateBottomDot(currentQ);
+  saveProgress();
+}
+
+function showFb(qi,correct,msg){
+  const fb=document.getElementById('fb-'+qi);
+  fb.className='fb show recorded';
+  fb.textContent='✔ Answer recorded.';
+  // store real feedback for end-of-activity reveal
+  fb.dataset.realMsg=msg;
+  fb.dataset.realOk=correct?'1':'0';
+  if(qi<TOTAL-1)document.getElementById('nxt-'+qi)?.classList.add('show');
+}
+
+// ── CHECKERS ─────────────────────────────────────
+function checkMC(qi,chosen){
+  if(scores[qi]!==null||finished)return;
+  const q=Q[qi];
+  const opts=document.querySelectorAll('#opts-'+qi+' .opt');
+  opts.forEach(o=>o.disabled=true);
+  const ok=chosen===q.correct;
+  showFb(qi,ok,ok?q.fb_ok:q.fb_fail);
+  markScore(qi,ok);
+}
+
+function checkFill(qi){
+  if(scores[qi]!==null||finished)return;
+  const q=Q[qi];
+  const inp=document.getElementById('fill-'+qi);
+  const val=inp.value.trim();
+  const ok=q.answers.some(a=>a.toLowerCase()===val.toLowerCase());
+  inp.disabled=true;
+  const sub=document.getElementById('sub-'+qi);if(sub)sub.disabled=true;
+  showFb(qi,ok,ok?q.fb_ok:q.fb_fail+' (Accepted: '+q.answers[0]+')');
+  markScore(qi,ok);
+}
+
+function checkPredict(qi){
+  if(scores[qi]!==null||finished)return;
+  const q=Q[qi];
+  let all=true;
+  q.inputs.forEach((inp,ii)=>{
+    const el=document.getElementById('inp-'+qi+'-'+inp.id);
+    const val=el.value.trim();
+    const ok=q.answers[ii].trim().toLowerCase()===val.toLowerCase();
+    el.disabled=true;
+    if(!ok)all=false;
+  });
+  const sub=document.getElementById('sub-'+qi);if(sub)sub.disabled=true;
+  showFb(qi,all,all?q.fb_ok:q.fb_fail);
+  markScore(qi,all);
+}
+
+function pickBugLine(qi,ln){
+  if(scores[qi]!==null||finished)return;
+  const q=Q[qi];
+  document.querySelectorAll('#buglines-'+qi+' .bug-line').forEach(el=>{el.classList.remove('selected','correct-pick','chosen-wrong');el.onclick=null;});
+  const ok=ln===q.correctLine;
+  showFb(qi,ok,ok?q.fb_ok:q.fb_fail);
+  markScore(qi,ok);
+}
+
+// ── MATCH ────────────────────────────────────────
+function dragStart(e,chipId){currentDragChipId=chipId;e.dataTransfer.setData('text/plain',chipId);}
+function dropChip(e,qi,si){
+  e.preventDefault();
+  const slot=document.getElementById('slot-'+qi+'-'+si);
+  slot.classList.remove('over');
+  const cid=currentDragChipId||e.dataTransfer.getData('text/plain');
+  if(!cid)return;
+  const chip=document.getElementById(cid);
+  if(!chip||chip.classList.contains('gone'))return;
+  const ex=slot.dataset.chipId;
+  if(ex&&ex!==cid)document.getElementById(ex)?.classList.remove('gone');
+  slot.dataset.chipId=cid;
+  slot.innerHTML=`<span class="slot-txt">${chip.textContent}</span>`;
+  chip.classList.add('gone');
+  selectedChip=null;currentDragChipId=null;
+}
+function chipClick(qi,ci){
+  if(scores[qi]!==null)return;
+  const chip=document.getElementById('chip-'+qi+'-'+ci);
+  if(chip.classList.contains('gone'))return;
+  if(selectedChip===chip){chip.style.outline='';selectedChip=null;return;}
+  if(selectedChip)selectedChip.style.outline='';
+  selectedChip=chip;chip.style.outline='2px solid var(--amber)';
+}
+function slotClick(qi,si){
+  if(scores[qi]!==null||!selectedChip)return;
+  const slot=document.getElementById('slot-'+qi+'-'+si);
+  const ex=slot.dataset.chipId;
+  if(ex)document.getElementById(ex)?.classList.remove('gone');
+  slot.dataset.chipId=selectedChip.id;
+  slot.innerHTML=`<span class="slot-txt">${selectedChip.textContent}</span>`;
+  selectedChip.classList.add('gone');selectedChip.style.outline='';selectedChip=null;
+}
+
+function checkMatch(qi){
+  if(scores[qi]!==null||finished)return;
+  const q=Q[qi];
+  let all=true;
+  q.answers.forEach((ans,i)=>{
+    const slot=document.getElementById('slot-'+qi+'-'+i);
+    const chip=slot.dataset.chipId?document.getElementById(slot.dataset.chipId):null;
+    const placed=chip?chip.textContent.trim():'';
+    const ok=placed===ans;
+    if(!ok)all=false;
+  });
+  const sub=document.getElementById('sub-'+qi);if(sub)sub.disabled=true;
+  showFb(qi,all,all?q.fb_ok:q.fb_fail);
+  markScore(qi,all);
+}
+// ── SAVE / RESTORE PROGRESS ──────────────────────
+const SAVE_PREFIX='cpp_progress_';
+
+function saveProgress(){
+  if(!currentUser||finished)return;
+  const data={
+    qOrder:Q.map(q=>q.id),
+    scores:[...scores],
+    timerSecs,
+    tabLeaveCount,
+    focusLeaveCount,
+    fullscreenExitCount,
+    violationCount,
+    screenshotAttemptCount,
+    mobileFullscreenBypass,
+    ts:Date.now()
+  };
+  localStorage.setItem(SAVE_PREFIX+currentUser.id,JSON.stringify(data));
+}
+
+function clearProgress(){
+  if(!currentUser)return;
+  localStorage.removeItem(SAVE_PREFIX+currentUser.id);
+}
+
+function hasSavedProgress(id){
+  return localStorage.getItem(SAVE_PREFIX+id)!==null;
+}
+
+function restoreProgress(id){
+  const raw=localStorage.getItem(SAVE_PREFIX+id);
+  if(!raw)return false;
+  try{
+    const data=JSON.parse(raw);
+    // Rebuild Q in saved order
+    const idMap={};
+    QBANK.forEach(q=>idMap[q.id]=q);
+    const rebuilt=data.qOrder.map(id=>idMap[id]).filter(Boolean);
+    if(rebuilt.length!==TOTAL)return false;
+    Q=rebuilt;
+    scores=data.scores;
+    timerSecs=data.timerSecs;
+    tabLeaveCount=data.tabLeaveCount||0;
+    focusLeaveCount=data.focusLeaveCount||0;
+    fullscreenExitCount=data.fullscreenExitCount||0;
+    violationCount=data.violationCount||0;
+    screenshotAttemptCount=data.screenshotAttemptCount||0;
+    mobileFullscreenBypass=!!data.mobileFullscreenBypass;
+    return true;
+  }catch(e){return false;}
+}
+
+
+// ── ENTER KEY ────────────────────────────────────
+document.addEventListener('keydown',e=>{
+  if(e.key!=='Enter')return;
+  const active=document.querySelector('.screen.active');
+  if(!active)return;
+  const qi=parseInt(active.id.replace('screen-',''));
+  if(isNaN(qi)||!Q[qi]||scores[qi]!==null)return;
+  if(Q[qi].type==='fill')checkFill(qi);
+  if(Q[qi].type==='predict')checkPredict(qi);
+});
+armSecurityWatchers();
+armScreenshotWatchers();
+</script>
+</body>
+</html>
